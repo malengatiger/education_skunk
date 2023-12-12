@@ -1,0 +1,75 @@
+To start mongodb/brew/mongodb-community now and restart at login:
+  brew services start mongodb/brew/mongodb-community
+Or, if you don't want/need a background service you can just run:
+  mongod --config /opt/homebrew/etc/mongod.conf
+
+Service URL: https://kasietransie-umrjnxdnuq-ew.a.run.app
+
+brew services stop mongodb-community@6.0
+
+brew services list
+
+ ./mvnw test -Dtest="com/boha/geo/*Test"
+
+
+lsof -n -i4TCP:8080
+kill -9 51101
+
+db.orders.deleteMany( { "created" :  { $gt : "2023-01-31T06:48:22.162474Z" } } )
+
+https://api.open-meteo.com/v1/forecast?latitude=-25.63&longitude=27.78
+&hourly=temperature_2m,apparent_temperature,rain,showers,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,visibility,windspeed_10m,windspeed_80m,temperature_80m,temperature_120m
+&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,precipitation_sum,rain_sum,showers_sum,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,shortwave_radiation_sum,et0_fao_evapotranspiration
+&timezone=CAT
+
+//swagger link
+http://localhost:8080/geo/v1/swagger-ui/index.html
+
+https://app.swaggerhub.com/apis/GeoMonitor/open-api_definition/v0#/LocationRequest
+
+DATA MIGRATION
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+mongodump --uri mongodb+srv://geomaster3:khaya1Son@atlascluster.r8p9mgu.mongodb.net/kasie_transie_db
+
+mongorestore --uri mongodb+srv://geomaster3:khaya1Son@cluster0.j5rskeq.mongodb.net
+
+//run this to ensure that cloud run works with clouud storage
+gcloud iam service-accounts add-iam-policy-binding 79998394043-compute@developer.gserviceaccount.com --role="roles/iam.serviceAccountTokenCreator" --member="serviceAccount:79998394043-compute@developer.gserviceaccount.com"
+
+//permission for tasks
+   gcloud projects add-iam-policy-binding stealthcannabis --member=serviceAccount:79998394043-compute@developer.gserviceaccount.com --role=roles/cloudtasks.enqueuer
+
+gcloud projects add-iam-policy-binding stealthcannabis --member=serviceAccount:79998394043-compute@developer.gserviceaccount.com --role=roles/cloudtasks.taskRunner
+
+//stealthcannabis@appspot.gserviceaccount.com
+gcloud projects add-iam-policy-binding stealthcannabis --member=serviceAccount:stealthcannabis@appspot.gserviceaccount.com --role=roles/cloudtasks.enqueuer
+
+gcloud projects add-iam-policy-binding stealthcannabis --member=serviceAccount:stealthcannabis@appspot.gserviceaccount.com --role=roles/cloudtasks.taskRunner
+
+//458451555038-compute@developer.gserviceaccount.com
+
+gcloud projects add-iam-policy-binding stealthcannabis --member=serviceAccount:458451555038-compute@developer.gserviceaccount.com --role=roles/cloudtasks.enqueuer
+
+gcloud projects add-iam-policy-binding stealthcannabis --member=serviceAccount:458451555038-compute@developer.gserviceaccount.com --role=roles/cloudtasks.taskRunner
+
+//firebase-adminsdk-hupxf@stealthcannabis.iam.gserviceaccount.com
+
+gcloud projects add-iam-policy-binding stealthcannabis --member=serviceAccount:firebase-adminsdk-hupxf@stealthcannabis.iam.gserviceaccount.com --role=roles/cloudtasks.enqueuer
+
+gcloud projects add-iam-policy-binding stealthcannabis --member=serviceAccount:firebase-adminsdk-hupxf@stealthcannabis.iam.gserviceaccount.com --role=roles/cloudtasks.taskRunner
+
+//secrets
+gcloud secrets add-iam-policy-binding chatGPTKey \
+  --member='serviceAccount:stealthcannabis@appspot.gserviceaccount.com ' \
+  --project=stealthcannabis \
+  --role='roles/secretmanager.secretAccessor'
+
+  //create service account
+  gcloud iam service-accounts create stealth-secret-manager
+  //handle IAM policy
+  gcloud projects add-iam-policy-binding stealthcannabis --member="serviceAccount:stealth-secret-manager@stealthcannabis.iam.gserviceaccount.com" --role=roles/secretmanager.secretAccessor
+
+//
+gcloud iam service-accounts get-iam-policy stealth-secret-manager@stealthcannabis.iam.gserviceaccount.com --format json
