@@ -59,7 +59,7 @@ public class CloudStorageService {
         // Generate a signed URL for the blob with no permissions required
         String downloadUrl = String.valueOf(blob.signUrl(3650, TimeUnit.DAYS, Storage.SignUrlOption.withV2Signature()));
         logger.info(mm +
-                " file uploaded to cloud storage; url = "+ downloadUrl);
+                " file uploaded to cloud storage ");
         return downloadUrl;
     }
 

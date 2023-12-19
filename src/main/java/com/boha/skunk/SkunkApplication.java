@@ -76,7 +76,7 @@ public class SkunkApplication implements ApplicationListener<ApplicationReadyEve
 		}
 	}
 	@Component
-	public class AppRunner implements ApplicationRunner {
+	public static class AppRunner implements ApplicationRunner {
 
 		private final DataSource dataSource;
 

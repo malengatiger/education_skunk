@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ImageRepository extends JpaRepository<ExamImage, Long> {
+public interface TagRepository extends JpaRepository<Tag, Long> {
 
-    List<ExamImage> findByExamPaperId(Long examPaperId);
+    List<Tag> findBySubjectId(Long subjectId);
 }

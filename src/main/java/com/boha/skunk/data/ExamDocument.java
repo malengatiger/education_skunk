@@ -15,7 +15,7 @@ public class ExamDocument {
     @Column(name = "title")
     String title;
 
-    @Column(name = "link")
+    @Column(name = "link", columnDefinition = "TEXT")
     String link;
 
     public ExamDocument() {

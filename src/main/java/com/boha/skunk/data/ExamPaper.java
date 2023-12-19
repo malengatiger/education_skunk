@@ -24,8 +24,54 @@ public class ExamPaper {
     @Column(name = "date")
     private String date;
 
+    @Column(name = "tablesString", columnDefinition = "TEXT")
+    private String tablesString;
+
     public ExamPaper() {
     }
 
+    public Long getId() {
+        return id;
+    }
 
+
+    public ExamLink getExamLink() {
+        return examLink;
+    }
+
+    public void setExamLink(ExamLink examLink) {
+        this.examLink = examLink;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTablesString() {
+        return tablesString;
+    }
+
+    public void setTablesString(String tablesString) {
+        this.tablesString = tablesString;
+    }
 }

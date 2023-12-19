@@ -19,9 +19,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -143,7 +141,7 @@ public class LinkExtractorService {
                         }
                     }
 
-                    logger.info("\n\n"+mm + "extractExamLinks: ... total ExamLinks: "
+                    logger.info("\n\n" + mm + "extractExamLinks: ... total ExamLinks: "
                             + links.size());
                     logger.info(mm + "extractExamLinks: ... total ExamDocuments (top level links): "
                             + docs.size() + "\n\n\n");
@@ -167,7 +165,7 @@ public class LinkExtractorService {
         DecimalFormat decimalFormat = new DecimalFormat("#.#");
         String formattedElapsedTime = decimalFormat.format(elapsedTimeInSeconds);
 
-        logger.info(mm+"Elapsed Time: " + formattedElapsedTime + " seconds (minutes) ; " + decimalFormat.format(elapsedTimeInSeconds/60));
+        logger.info(mm + "Elapsed Time: " + formattedElapsedTime + " seconds (minutes) ; " + decimalFormat.format(elapsedTimeInSeconds / 60));
         return links;
     }
 
@@ -182,25 +180,80 @@ public class LinkExtractorService {
     }
 
     public List<ExamLink> extractDataFromHtml(ExamDocument examDocument, String html) {
-        logger.info(mm+" extracting data from html .....");
+        logger.info(mm + " extracting data from html .....");
         Document doc = Jsoup.parse(html);
         List<ExamLink> examLinks = new ArrayList<>();
         Elements sections = doc.select(".DnnModule-DNN_Documents");
-        logger.info(mm+"Number of DNN_Documents sections: " + sections.size());
+        logger.info(mm + "Number of DNN_Documents sections: " + sections.size());
 
         for (Element section : sections) {
             String title = extractTitle(section);
-            var subject = getOrCreateSubject(title);
-            logger.info(mm + "\uD83D\uDD34 \uD83D\uDD34 Subject Title Extracted: " + subject.getTitle());
-            examLinks = extractLinks(section, subject, examDocument);
+            if (!isEthnicLanguage(title)) {
+                var subject = getOrCreateSubject(title);
+                //todo - filter ethnic languages
+                logger.info(mm + "\uD83D\uDD34 \uD83D\uDD34 " +
+                        "Subject Title Extracted: " + subject.getTitle());
+                examLinks = extractLinks(section, subject, examDocument);
+            }
         }
-        logger.info( "\n\n"+mm+" ExamDocument extraction complete: "+examDocument.getTitle()+
+
+        logger.info("\n\n" + mm + " ExamDocument extraction complete: " + examDocument.getTitle() +
                 " \uD83D\uDD35\uD83D\uDD35\uD83D\uDD35 " + examLinks.size());
         return examLinks;
     }
 
+    boolean isEthnicLanguage(String title) {
+        if (title.toUpperCase().contains("ISINDEBELE")) {
+            return true;
+        }
+        if (title.toUpperCase().contains("AFRIKAANS")) {
+            return true;
+        }
+        if (title.toUpperCase().contains("ISIXHOSA")) {
+            return true;
+        }
+        if (title.toUpperCase().contains("SISWATI")) {
+            return true;
+        }
+        if (title.toUpperCase().contains("ISIZULU")) {
+            return true;
+        }
+        if (title.toUpperCase().contains("SOUTH AFRICAN SIGN LANGUAGE")) {
+            return true;
+        }
+        if (title.toUpperCase().contains("SEPEDI")) {
+            return true;
+        }
+        if (title.toUpperCase().contains("SETSWANA")) {
+            return true;
+        }
+        if (title.toUpperCase().contains("SESOTHO")) {
+            return true;
+        }
+        if (title.toUpperCase().contains("XITSONGA")) {
+            return true;
+        }
+        if (title.toUpperCase().contains("TSHIVENDA")) {
+            return true;
+        }
+
+        return false;
+    }
+
     private Subject getOrCreateSubject(String title) {
         String upperCase = title.toUpperCase();
+        if (upperCase.contains("MATHEMATICS")) {
+            upperCase = "MATHEMATICS";
+        }
+        if (upperCase.contains("PHYSICAL SCIENCES")) {
+            upperCase = "PHYSICAL SCIENCES";
+        }
+        if (upperCase.contains("RELGIOUS") || upperCase.contains("RELIGIOUS")) {
+            upperCase = "RELIGIOUS STUDIES";
+        }
+        if (upperCase.contains("MATHEMATICS")) {
+            upperCase = "MATHEMATICS";
+        }
         Subject subject = subjectRepository.findByTitleIgnoreCase(upperCase);
         if (subject == null) {
             subject = new Subject(upperCase);
@@ -208,6 +261,7 @@ public class LinkExtractorService {
         }
         return subject;
     }
+
     private String extractTitle(Element section) {
         Element titleElement = section.selectFirst(".eds_containerTitle");
         assert titleElement != null;
@@ -247,7 +301,7 @@ public class LinkExtractorService {
 
             }
         }
-        logger.info(mm+ examLinks.size() + " .... examLinks created for subject: " + subject.getTitle());
+        logger.info(mm + examLinks.size() + " .... examLinks created for subject: " + subject.getTitle());
         return examLinks;
     }
 

@@ -3,7 +3,6 @@ package com.boha.skunk.data;
 import jakarta.persistence.*;
 import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "subjects")
 
@@ -20,6 +19,19 @@ public class Subject {
     }
 
     public Subject(String title) {
+        this.title = title;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
         this.title = title;
     }
 }

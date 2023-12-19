@@ -4,7 +4,6 @@ package com.boha.skunk.data;
 import jakarta.persistence.*;
 import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "exam_links")
 public class ExamLink {
@@ -20,7 +19,7 @@ public class ExamLink {
     @JoinColumn(name = "subject_id")
     private Subject subject;
 
-    @Column(name = "link")
+    @Column(name = "link", columnDefinition = "TEXT")
     private String link;
 
     @Column(name = "title")
@@ -54,4 +53,31 @@ public class ExamLink {
         return id;
     }
 
+    public ExamDocument getExamDocument() {
+        return examDocument;
+    }
+
+    public void setExamDocument(ExamDocument examDocument) {
+        this.examDocument = examDocument;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDocumentTitle(String documentTitle) {
+        this.documentTitle = documentTitle;
+    }
 }
