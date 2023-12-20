@@ -3,7 +3,6 @@ package com.boha.skunk.data;
 import jakarta.persistence.*;
 import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "exam_papers")
 public class ExamPaper {

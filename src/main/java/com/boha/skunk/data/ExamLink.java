@@ -28,10 +28,20 @@ public class ExamLink {
     @Column(name = "document_title")
     private String documentTitle;
 
-
+    @Column(name = "page_image_zip_url", columnDefinition = "TEXT")
+    private String pageImageZipUrl;
     public ExamLink() {
     }
 // Constructors, getters, and setters...
+
+
+    public String getPageImageZipUrl() {
+        return pageImageZipUrl;
+    }
+
+    public void setPageImageZipUrl(String pageImageZipUrl) {
+        this.pageImageZipUrl = pageImageZipUrl;
+    }
 
     public String getLink() {
         return link;

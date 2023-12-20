@@ -12,5 +12,5 @@ public interface ExamPaperRepository extends JpaRepository<ExamPaper, Long> {
     @Query("UPDATE ExamPaper ep SET ep.tablesString = :tablesString WHERE ep.id = :id")
     void updateTablesStringById(Long id, String tablesString);
 
-
+    ExamPaper findByExamLinkId(Long examLinkId);
 }

@@ -1,21 +1,18 @@
 package com.boha.skunk.services;
 
-import com.google.auth.oauth2.GoogleCredentials;
+import com.boha.skunk.util.DirectoryUtils;
 import com.google.cloud.storage.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -26,10 +23,11 @@ public class CloudStorageService {
     static final String mm = "\uD83C\uDF0D\uD83C\uDF0D\uD83C\uDF0D\uD83C\uDF0D CloudStorageService \uD83D\uDD35";
     static final Logger logger = Logger.getLogger(LinkExtractorService.class.getSimpleName());
     static final Gson G = new GsonBuilder().setPrettyPrinting().create();
+
     public CloudStorageService() throws IOException {
         // Initialize Firebase Admin SDK and get the storage instance using default credentials
         storage = StorageOptions.getDefaultInstance().getService();
-        logger.info(mm+" Storage initialized : " + storage.toString());
+        logger.info(mm + " Storage initialized : " + storage.toString());
     }
 
     @Value("${projectId}")
@@ -38,13 +36,25 @@ public class CloudStorageService {
     private String bucketName;
     @Value("${cloudStorageDirectory}")
     private String cloudStorageDirectory;
+
+    public File downloadFile(String url) throws Exception {
+        File dir = DirectoryUtils.createDirectoryIfNotExists("pdfs");
+        String path = dir.getPath() + "/images_"
+                + System.currentTimeMillis() + ".zip";
+        File file = new File(path);
+        FileUtils.copyURLToFile(new URL(url),
+               file);
+
+        logger.info(mm+"File downloaded from Cloud Storage: "
+                + (file.length()/1024) + "K bytes");
+        return file;
+    }
+
     public String uploadFile(File file) throws IOException {
 
         logger.info(mm +
                 " ............. uploadFile to cloud storage: " + file.getName());
         String contentType = Files.probeContentType(file.toPath());
-//        Storage storage = StorageOptions.newBuilder()
-//                .setProjectId(projectId).build().getService();
         BlobId blobId = BlobId.of(bucketName, cloudStorageDirectory
                 + "/" + file.getName());
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)

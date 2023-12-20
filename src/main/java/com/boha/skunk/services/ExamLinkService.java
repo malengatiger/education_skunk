@@ -2,26 +2,29 @@ package com.boha.skunk.services;
 
 import com.boha.skunk.data.ExamLink;
 import com.boha.skunk.data.ExamLinkRepository;
+import com.boha.skunk.data.Subject;
+import com.boha.skunk.data.SubjectRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
+@RequiredArgsConstructor
 public class ExamLinkService {
     private final ExamLinkRepository examLinkRepository;
+    private final SubjectRepository subjectRepository;
     static final String mm = "\uD83C\uDF3F\uD83C\uDF3F\uD83C\uDF3F ExamLinkService \uD83E\uDD43";
 
     static final Logger logger = Logger.getLogger(ExamLinkService.class.getSimpleName());
     @Value("${educUrl}")
     private String educUrl;
 
-    @Autowired
-    public ExamLinkService(ExamLinkRepository examLinkRepository) {
-        this.examLinkRepository = examLinkRepository;
-    }
 
     public ExamLink saveExamLink(ExamLink examLink) {
         try {
@@ -38,8 +41,20 @@ public class ExamLinkService {
     public List<Object[]> getDistinctDocumentTitles() {
         return examLinkRepository.findDistinctDocumentTitlesWithId();
     }
-    public List<ExamLink> getAllExamLinks() {
-        return examLinkRepository.findAll();
+    public List<ExamLink> getSubjectExamLinks(Long subjectId) {
+        return examLinkRepository.findBySubjectId(subjectId);
+    }
+    public ExamLink getExamLink(Long examLinkId) throws Exception {
+        Optional<ExamLink> examLinkOptional = examLinkRepository.findById(examLinkId);
+        if (examLinkOptional.isPresent()) {
+            return examLinkOptional.get();
+        } else {
+            throw new Exception("ExamLink not found");
+        }
+
+    }
+    public List<Subject> getSubjects() {
+        return subjectRepository.findAll();
     }
 
     public static class DistinctLink {

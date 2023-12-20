@@ -7,6 +7,7 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.kernel.pdf.canvas.parser.EventType;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfCanvasProcessor;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
@@ -23,12 +24,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 import java.util.logging.Logger;
 
 @Service
@@ -57,6 +61,10 @@ public class DataService {
         var examLink = examLinkRepository.findById(examLinkId).orElse(null);
         if (examLink == null) {
             throw new Exception("ExamLink record not found");
+        }
+        var examPaper = examPaperRepository.findByExamLinkId(examLinkId);
+        if (examPaper != null) {
+            return examPaper;
         }
         logger.info(mm + " extractTextFromPdf starting ... examLinkId: "
                 + examLinkId + " \uD83D\uDC9C title: " + examLink.getTitle());
@@ -118,10 +126,6 @@ public class DataService {
                             + " examPaperId: " + mPaper.getId());
 
                     //
-                    PdfReader reader2 = new PdfReader(outputFile.getAbsolutePath());
-                    var images = extractImages(reader2, mPaper);
-                    logger.info(mm + " added " + images.size() +
-                            " \uD83D\uDD35 images in exam paper \uD83D\uDD35 " + mPaper.getTitle());
                     reader.close();
                 }
             } else {
@@ -131,80 +135,13 @@ public class DataService {
         return paper;
     }
 
-    public List<ExamImage> getExamImages(Long examPaperId) {
-        List<ExamImage> list = imageRepository.findByExamPaperId(examPaperId);
-        List<ExamImage> filtered = new ArrayList<>();
-        for (ExamImage examImage : list) {
-            ExamPaper i = new ExamPaper();
-            i.setId(examImage.getId());
-            i.setDate(examImage.getExamPaper().getDate());
-            i.setTitle(examImage.getExamPaper().getTitle());
-            i.setExamLink(examImage.getExamPaper().getExamLink());
-            examImage.setExamPaper(i);
-            filtered.add(examImage);
-        }
-        return filtered;
-    }
 
     public ExamPaper getExamPaper(Long examPaperId) {
         var opt = examPaperRepository.findById(examPaperId);
         return opt.orElse(null);
     }
 
-    public List<ExamTable> getExamTables(Long examPaperId) {
-        List<ExamTable> list = examTableRepository.findByExamPaperId(examPaperId);
-        logger.info(mm + " tables ... " + list.size());
-        return list;
 
-    }
-
-
-    private List<ExamImage> extractImages(PdfReader reader, ExamPaper examPaper) throws IOException {
-
-        logger.info(mm + " extractImages: ... starting ... " + examPaper.getTitle());
-        imageFiles.clear();
-        long size = 0;
-        List<ExamImage> examImages = new ArrayList<>();
-//        logger.info(mm + " " + reader.getNumberOfPages() + " pages in pdf");
-
-        try (PdfDocument pdfDoc = new PdfDocument(reader)) {
-            for (int i = 1; i <= pdfDoc.getNumberOfPages(); i++) {
-                PdfPage page = pdfDoc.getPage(i);
-                CustomEventListener svgRenderListener = new CustomEventListener();
-                PdfCanvasProcessor processor = new PdfCanvasProcessor(svgRenderListener);
-                processor.processPageContent(page);
-            }
-
-            int index = 0;
-            logger.info(mm + "imageFiles found in document: " + imageFiles.size());
-            for (File imageFile : imageFiles) {
-                size += imageFile.length();
-                String fileType = "png";
-                int i = imageFile.getName().lastIndexOf(".");
-                if (i > -1) {
-                    fileType = imageFile.getName().substring(i + 1);
-                }
-                logger.info(mm + " image file path: " + imageFile.getPath()
-                        + ", ....... will be uploaded to cloud storage");
-//                String url = cloudStorageService.uploadFile(imageFile);
-
-                ExamImage examImage = new ExamImage();
-                examImage.setExamPaper(examPaper);
-                examImage.setFileType(fileType);
-                examImage.setDownloadUrl("none for now");
-                examImage.setIndex(index);
-                ExamImage savedExamImage = imageRepository.save(examImage);
-                examImages.add(savedExamImage);
-                index++;
-                logger.info(mm + " image has been added to database for examPaper id: "
-                        + savedExamImage.getExamPaper().getId() + " url: " + savedExamImage.getDownloadUrl());
-            }
-
-            logger.info(mm + " job complete! image files created: " + imageFiles.size() + " size: " + (size / 1024) + "K");
-        }
-
-        return examImages;
-    }
 
     public String cleanupString(String input) {
         // Use regular expression to replace multiple occurrences of \n with a single \n

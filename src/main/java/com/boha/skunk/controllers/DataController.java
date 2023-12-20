@@ -42,7 +42,7 @@ public class DataController {
         }
     }
     @GetMapping("getExamPaper")
-    public ResponseEntity<Object> getExamPaper(@RequestParam Long examPaperId) throws Exception {
+    public ResponseEntity<Object> getExamPaper(@RequestParam Long examPaperId) {
         ExamPaper examPaper = dataService.getExamPaper(examPaperId);
         if (examPaper != null) {
             logger.info(mm + " getExamPaper found: " + examPaper.getTitle() + "  \uD83D\uDD90\uD83C\uDFFE");
@@ -53,15 +53,5 @@ public class DataController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(msg);
         }
     }
-    @GetMapping("getExamPaperImages")
-    public List<ExamImage> getExamPaperImages(@RequestParam Long examPaperId) {
-        List<ExamImage> examImages = dataService.getExamImages(examPaperId);
-        logger.info(mm+" getExamPaperImages found: " + examImages.size() + "  \uD83D\uDD90\uD83C\uDFFE");
-        int cnt = 1;
-        for (ExamImage examImage : examImages) {
-            logger.info(mm+" image: #"+ cnt + " \uD83C\uDF45 id: " + examImage.getId() + " url: " + examImage.getDownloadUrl());
-            cnt++;
-        }
-        return examImages;
-    }
+
 }
