@@ -37,11 +37,15 @@ public class LinkExtractorService {
     private final ExamLinkService examLinkService;
     private final ExamDocumentRepository examDocumentRepository;
     private final SubjectRepository subjectRepository;
+    private final DataService dataService;
+    private final PdfService pdfService;
 
-    public LinkExtractorService(ExamLinkService examLinkService, ExamDocumentRepository examDocumentRepository, SubjectRepository subjectRepository) {
+    public LinkExtractorService(ExamLinkService examLinkService, ExamDocumentRepository examDocumentRepository, SubjectRepository subjectRepository, DataService dataService, PdfService pdfService) {
         this.examLinkService = examLinkService;
         this.examDocumentRepository = examDocumentRepository;
         this.subjectRepository = subjectRepository;
+        this.dataService = dataService;
+        this.pdfService = pdfService;
         this.client = createHttpClient();
     }
 
@@ -179,7 +183,7 @@ public class LinkExtractorService {
         return null;
     }
 
-    public List<ExamLink> extractDataFromHtml(ExamDocument examDocument, String html) {
+    public List<ExamLink> extractDataFromHtml(ExamDocument examDocument, String html) throws Exception {
         logger.info(mm + " extracting data from html .....");
         Document doc = Jsoup.parse(html);
         List<ExamLink> examLinks = new ArrayList<>();
@@ -233,11 +237,8 @@ public class LinkExtractorService {
         if (title.toUpperCase().contains("XITSONGA")) {
             return true;
         }
-        if (title.toUpperCase().contains("TSHIVENDA")) {
-            return true;
-        }
+        return title.toUpperCase().contains("TSHIVENDA");
 
-        return false;
     }
 
     private Subject getOrCreateSubject(String title) {
@@ -254,6 +255,9 @@ public class LinkExtractorService {
         if (upperCase.contains("MATHEMATICS")) {
             upperCase = "MATHEMATICS";
         }
+        if (upperCase.equalsIgnoreCase("ENGLISH")) {
+            upperCase = "ENGLISH (LANGUAGE)";
+        }
         Subject subject = subjectRepository.findByTitleIgnoreCase(upperCase);
         if (subject == null) {
             subject = new Subject(upperCase);
@@ -268,7 +272,7 @@ public class LinkExtractorService {
         return titleElement.text();
     }
 
-    private List<ExamLink> extractLinks(Element section, Subject subject, ExamDocument examDocument) {
+    private List<ExamLink> extractLinks(Element section, Subject subject, ExamDocument examDocument) throws Exception {
         List<ExamLink> examLinks = new ArrayList<>();
         Elements links = section.select("div.DNN_Documents a");
         for (Element link : links) {
@@ -277,6 +281,7 @@ public class LinkExtractorService {
             if (!linkText.equalsIgnoreCase("Download")) {
                 String uc = subject.getTitle().toUpperCase();
                 if (uc.contains("AFRIKAANS")
+
                         || uc.contains("SESOTHO")
                         || uc.contains("SETSWANA")
                         || uc.contains("ISIXHOSA")
@@ -288,22 +293,55 @@ public class LinkExtractorService {
                         || uc.contains("SEPEDI")) {
                     // Ignore
                 } else {
-                    ExamLink examLink0 = new ExamLink();
-                    examLink0.setExamDocument(examDocument);
-                    examLink0.setLink(convertToAbsoluteLink(linkUrl));
-                    examLink0.setTitle(subject.getTitle() + " - " + linkText);
-                    examLink0.setDocumentTitle(examDocument.getTitle());
-                    examLink0.setSubject(subject);
-                    var res = examLinkService.saveExamLink(examLink0);
-                    examLinks.add(res);
+                    if (!linkText.contains("Afrikaans")) {
+                        ExamLink examLink0 = new ExamLink();
+                        examLink0.setExamDocument(examDocument);
+                        examLink0.setLink(convertToAbsoluteLink(linkUrl));
+                        examLink0.setTitle(linkText);
+                        examLink0.setDocumentTitle(examDocument.getTitle());
+                        examLink0.setSubject(subject);
 
+                        var res = examLinkService.saveExamLink(examLink0);
+                        try {
+                            dataService.extractExamPaperText(res.getId());
+                        } catch (Exception e) {
+                            logger.severe(mm + "ERROR: dataService.extractExamPaperText: " + e.getMessage());
+                        }
+                        try {
+                            res = pdfService.getPdfPageImages(res.getId());
+                        } catch (Exception e) {
+                            logger.severe(mm + "ERROR : pdfService.getPdfPageImages: " + e.getMessage());
+                        }
+                        //
+                        examLinks.add(res);
+                    }
                 }
 
             }
         }
-        logger.info(mm + examLinks.size() + " .... examLinks created for subject: " + subject.getTitle());
+        logger.info(mm + examLinks.size() +
+                " .... examLinks created for subject: " + subject.getTitle());
         return examLinks;
     }
 
+    public String extractSentences(String text) {
+        List<String> sentences = new ArrayList<>();
 
+        // Split the text into sentences using a regular expression
+        String[] sentenceArray = text.split("[.!?]");
+
+        // Trim and add each sentence to the list
+        for (String sentence : sentenceArray) {
+            String trimmedSentence = sentence.trim();
+            if (!trimmedSentence.isEmpty()) {
+                sentences.add(trimmedSentence);
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String sentence : sentences) {
+            sb.append(sentence).append("\n");
+        }
+
+        return sb.toString();
+    }
 }

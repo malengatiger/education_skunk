@@ -2,7 +2,8 @@ package com.boha.skunk.data;
 
 
 import jakarta.persistence.*;
-import lombok.Data;
+
+import java.util.List;
 
 @Entity
 @Table(name = "exam_links")
@@ -19,6 +20,12 @@ public class ExamLink {
     @JoinColumn(name = "subject_id")
     private Subject subject;
 
+
+
+    @Column(name = "exam_text", columnDefinition = "TEXT")
+
+    private String examText;
+
     @Column(name = "link", columnDefinition = "TEXT")
     private String link;
 
@@ -30,10 +37,19 @@ public class ExamLink {
 
     @Column(name = "page_image_zip_url", columnDefinition = "TEXT")
     private String pageImageZipUrl;
+
+
+    public String getExamText() {
+        return examText;
+    }
+
+    public void setExamText(String examText) {
+        this.examText = examText;
+    }
+
     public ExamLink() {
     }
 // Constructors, getters, and setters...
-
 
     public String getPageImageZipUrl() {
         return pageImageZipUrl;
@@ -49,10 +65,6 @@ public class ExamLink {
 
     public String getTitle() {
         return title;
-    }
-
-    public String toString() {
-        return title + " - " + link;
     }
 
     public String getDocumentTitle() {

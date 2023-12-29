@@ -69,17 +69,10 @@ public class YouTubeController {
 
     @GetMapping("/searchVideosByTag")
     public ResponseEntity<Object> searchVideosByTag(@RequestParam("maxResults") Integer maxResults,
-                                                    @RequestParam("subjectId") String subjectId,
+                                                    @RequestParam("subjectId") Long subjectId,
                                                     @RequestParam("tagType") Integer tagType) throws Exception {
-        long parsedSubjectId;
-        try {
-            parsedSubjectId = Long.parseLong(subjectId);
-        } catch (NumberFormatException e) {
-            return ResponseEntity.badRequest().body(new CustomErrorResponse(
-                    400, "Subject id invalid", new Date().toString()));
-        }
 
-        Subject subject = getSubjectById(parsedSubjectId);
+        Subject subject = getSubjectById(subjectId);
         if (subject == null) {
             return ResponseEntity.badRequest().body(new CustomErrorResponse(
                     400, "Subject not found", new Date().toString()));

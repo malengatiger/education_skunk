@@ -1,5 +1,6 @@
 package com.boha.skunk.controllers;
 
+import com.boha.skunk.data.ExamLink;
 import com.boha.skunk.services.PdfService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,16 +33,16 @@ public class PdfController {
     }
 
     @GetMapping("/createPdfPageImages")
-    public ResponseEntity<byte[]> createPdfPageImages(@RequestParam Long examLinkId) throws Exception {
+    public ResponseEntity<ExamLink> createPdfPageImages(@RequestParam Long examLinkId) throws Exception {
 
-        File zipFile = pdfService.getPdfPageImages(examLinkId);
-        byte[] zipBytes = FileUtils.readFileToByteArray(zipFile);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDispositionFormData("attachment", "images_"+examLinkId+".zip");
-        logger.info(mm+"Return zipped directory: " + zipFile.getAbsolutePath()
-        + ", length: " + (zipFile.length()/1024) + "K bytes");
-        return ResponseEntity.ok().headers(headers).body(zipBytes);
+        ExamLink examLink = pdfService.getPdfPageImages(examLinkId);
+//        byte[] zipBytes = FileUtils.readFileToByteArray(zipFile);
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+//        headers.setContentDispositionFormData("attachment", "images_"+examLinkId+".zip");
+        logger.info(mm+"Return updated ExamLink: " + examLink.getPageImageZipUrl()
+        + ", id: " + (examLink.getId()));
+        return ResponseEntity.ok().body(examLink);
     }
 }

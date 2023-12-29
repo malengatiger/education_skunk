@@ -39,19 +39,19 @@ public class SubscriptionService {
     }
 
     public List<Pricing> generateTestPricing() {
-        List<Pricing> pricings = new ArrayList<>();
+        List<Pricing> pricing = new ArrayList<>();
         List<Country> countries = countryRepository.findAll();
         for (Country country : countries) {
             switch (country.getName()) {
-                case "South Africa" -> pricings.add(addPricing(country, 100.00, 899, "ZAR"));
-                case "Zimbabwe" -> pricings.add(addPricing(country, 1000.00, 9000, "ZD"));
-                case "Namibia" -> pricings.add(addPricing(country, 100.00, 800.00, "ZAR"));
-                case "Botswana" -> pricings.add(addPricing(country, 200.00, 1999.00, "PUL"));
-                default -> pricings.add(addPricing(country, 100.00, 900.00, "ZAR"));
+                case "South Africa" -> pricing.add(addPricing(country, 100.00, 899, "ZAR"));
+                case "Zimbabwe" -> pricing.add(addPricing(country, 1000.00, 9000, "ZW"));
+                case "Namibia" -> pricing.add(addPricing(country, 100.00, 800.00, "NAD"));
+                case "Botswana" -> pricing.add(addPricing(country, 200.00, 1999.00, "BWP"));
+                default -> pricing.add(addPricing(country, 100.00, 900.00, "ZAR"));
             }
         }
         generateFreeSubscriptions();
-        return pricingRepository.findAll();
+        return pricing;
     }
 
     public Pricing addPricing(Country country, double monthly, double annual, String currency) {
@@ -66,17 +66,20 @@ public class SubscriptionService {
         return mp;
     }
 
-    public Subscription addSubscription(Subscription subscription) throws Exception {
+    public Subscription addSubscription(Subscription subscription) {
         return subscriptionRepository.save(subscription);
     }
 
 
-    public List<Subscription> getSubscriptions() throws Exception {
+    public List<Subscription> getSubscriptions() {
         return subscriptionRepository.findAll();
 
     }
+    public List<Pricing> getPricing() {
+        return pricingRepository.findAll();
 
-    public List<Subscription> getOrganizationSubscriptions(Long organizationId) throws Exception {
+    }
+    public List<Subscription> getOrganizationSubscriptions(Long organizationId) {
         return subscriptionRepository.findByOrganizationId(organizationId);
 
     }

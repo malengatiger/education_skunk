@@ -1,7 +1,6 @@
 package com.boha.skunk.data;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
 @Entity
 @Table(name = "exam_papers")
@@ -23,8 +22,6 @@ public class ExamPaper {
     @Column(name = "date")
     private String date;
 
-    @Column(name = "tablesString", columnDefinition = "TEXT")
-    private String tablesString;
 
     public ExamPaper() {
     }
@@ -66,11 +63,4 @@ public class ExamPaper {
         this.date = date;
     }
 
-    public String getTablesString() {
-        return tablesString;
-    }
-
-    public void setTablesString(String tablesString) {
-        this.tablesString = tablesString;
-    }
 }

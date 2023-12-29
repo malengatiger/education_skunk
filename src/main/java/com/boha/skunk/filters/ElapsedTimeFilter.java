@@ -1,5 +1,6 @@
-package com.boha.skunk.util;
+package com.boha.skunk.filters;
 
+import com.boha.skunk.util.DirectoryUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import jakarta.servlet.*;
@@ -37,5 +38,7 @@ public class ElapsedTimeFilter implements Filter {
         logger.info(mm + " Request URI: " + requestURI
                 + " \uD83D\uDD52 Elapsed Time: " + elapsedSeconds
                 + " seconds");
+
+        DirectoryUtils.deleteFilesInDirectory();
     }
 }

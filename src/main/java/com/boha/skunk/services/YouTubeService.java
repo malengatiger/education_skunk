@@ -82,14 +82,15 @@ public class YouTubeService {
             Long maxResults, Subject subject, int tagType) throws IOException {
         List<String> list = new ArrayList<>();
         list.add("video");
-        List<Tag> tags = tagRepository.findBySubjectId(subject.getId());
+        List<Tag> tags = tagRepository.findBySubjectIdAndTagType(subject.getId(), tagType);
         StringBuilder sb = new StringBuilder();
+        sb.append(subject.getTitle()).append(" ");
         for (Tag tag : tags) {
             if (tag.getTagType() == tagType) {
                 sb.append(tag.getText()).append(" ");
             }
         }
-        logger.info(mm + "query string:video: " + sb.toString());
+        logger.info(mm + "query string: " + sb.toString());
         var results = search(sb.toString(), list, maxResults, subject);
         logger.info(mm+" video search found: " + results.size() + " YouTube videos\n\n");
         return results;
@@ -107,6 +108,7 @@ public class YouTubeService {
                                      Subject subject) throws IOException {
         logger.info(mm + "subject: " + subject.getTitle());
         logger.info(mm + "query: " + query);
+        logger.info(mm + "types: " + types.toString());
         List<String> list = new ArrayList<>();
         list.add("id");
         list.add("snippet");

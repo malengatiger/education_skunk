@@ -2,7 +2,6 @@ package com.boha.skunk.controllers;
 
 import com.boha.skunk.data.SubjectRepository;
 import com.boha.skunk.data.Tag;
-import com.boha.skunk.services.ExamTableService;
 import com.boha.skunk.services.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -23,5 +23,7 @@
 hs_err_pid*
 replay_pid*
 
-pdfs/
-.idea/
+pdfs/*
+.idea/sonarlint/*
+.idea/*
+.env*

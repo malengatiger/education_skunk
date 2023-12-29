@@ -6,7 +6,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ExamTableRepository extends JpaRepository<ExamTable, Long> {
-    List<ExamTable> findByExamPaperId(Long examPaperId);
+public interface ExamPageImageRepository extends JpaRepository<ExamPageImage, Long> {
 
+
+    List<ExamPageImage> findByExamLinkId(Long examLinkId);
 }

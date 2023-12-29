@@ -19,8 +19,8 @@ import java.util.logging.Logger;
 
 public class Downloader {
     static final String mm = "\uD83E\uDD6C \uD83E\uDD6C \uD83E\uDD6C " +
-            "TableExtractorService  \uD83E\uDD6C";
-    static final Logger logger = Logger.getLogger(ExamTableRenderer.class.getSimpleName());
+            "Downloader  \uD83E\uDD6C";
+    static final Logger logger = Logger.getLogger(Downloader.class.getSimpleName());
     static final Gson G = new GsonBuilder().setPrettyPrinting().create();
 
     public static File downloadPdf(String url) throws IOException {

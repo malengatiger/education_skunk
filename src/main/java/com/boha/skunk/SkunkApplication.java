@@ -1,5 +1,6 @@
 package com.boha.skunk;
 
+import com.boha.skunk.util.E;
 import com.google.firebase.database.annotations.NotNull;
 import jakarta.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.sql.DataSource;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +49,15 @@ public class SkunkApplication implements ApplicationListener<ApplicationReadyEve
 				+ event.getTimestamp());
 		logger.info(mm+"servletContext path: \uD83D\uDD90\uD83C\uDFFD "+servletContext.getContextPath());
 		showApis(event);
+		InetAddress ip;
+		try {
+			ip = InetAddress.getLocalHost();
+			logger.info(E.PEAR + E.PEAR + E.PEAR + E.PEAR
+					+ " Current IP address : " + ip.getHostAddress());
+
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

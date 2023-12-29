@@ -50,13 +50,13 @@ public class CloudStorageService {
         return file;
     }
 
-    public String uploadFile(File file) throws IOException {
+    public String uploadFile(File file,Long examLinkId) throws IOException {
 
         logger.info(mm +
                 " ............. uploadFile to cloud storage: " + file.getName());
         String contentType = Files.probeContentType(file.toPath());
         BlobId blobId = BlobId.of(bucketName, cloudStorageDirectory
-                + "/" + file.getName());
+                + "/sgelaAI_examLink_" + examLinkId + "_" + System.currentTimeMillis() + ".png");
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setContentType(contentType)
                 .build();
@@ -69,7 +69,7 @@ public class CloudStorageService {
         // Generate a signed URL for the blob with no permissions required
         String downloadUrl = String.valueOf(blob.signUrl(3650, TimeUnit.DAYS, Storage.SignUrlOption.withV2Signature()));
         logger.info(mm +
-                " file uploaded to cloud storage ");
+                " file uploaded to cloud storage: \n" + downloadUrl);
         return downloadUrl;
     }
 

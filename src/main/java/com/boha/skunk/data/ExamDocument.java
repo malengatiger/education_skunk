@@ -3,6 +3,8 @@ package com.boha.skunk.data;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Table(name = "exam_documents")
 
@@ -11,6 +13,8 @@ public class ExamDocument {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @OneToMany(mappedBy = "examDocument")
+    List<ExamLink> examLinks;
     @Column(name = "title")
     String title;
 

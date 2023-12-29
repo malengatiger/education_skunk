@@ -3,10 +3,12 @@ package com.boha.skunk.data;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "users",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"organization_id", "id"}),
+                @UniqueConstraint(columnNames = {"organization_id", "email"}),
                 @UniqueConstraint(columnNames = {"email"}),
                 @UniqueConstraint(columnNames = {"cellphone"})
         },
@@ -21,6 +23,9 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "organization_id")
     private Organization organization;
+
+    @OneToMany(mappedBy = "user")
+    List<Subscription> subscriptions;
 
     @Column(name = "first_name")
     private String firstName;
@@ -96,6 +101,10 @@ public class User {
 
     public String getCellphone() {
         return cellphone;
+    }
+
+    public String getName() {
+        return firstName + " " + lastName;
     }
 
     public void setCellphone(String cellphone) {

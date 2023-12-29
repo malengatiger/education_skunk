@@ -10,9 +10,9 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 public class DirectoryUtils {
-    static final String mm = "\uD83D\uDD35\uD83D\uDD35\uD83D\uDD35\uD83D\uDD35 DataService \uD83D\uDC9C";
-    static final Logger logger = Logger.getLogger(DataService.class.getSimpleName());
-    static final Gson G = new GsonBuilder().setPrettyPrinting().create();
+    static final String mm = "\uD83D\uDD35\uD83D\uDD35\uD83D\uDD35\uD83D\uDD35 " +
+            "DirectoryUtils \uD83D\uDC9C";
+    static final Logger logger = Logger.getLogger(DirectoryUtils.class.getSimpleName());
 
     public static void deleteFilesInDirectory() {
         File directory1 = new File("pdf_page_images");
@@ -29,7 +29,7 @@ public class DirectoryUtils {
                         long lastModifiedTime = file.lastModified();
                         long currentTime = System.currentTimeMillis();
                         long timeDifference = currentTime - lastModifiedTime;
-                        long fiveMinutesInMillis = 5 * 60 * 1000; // 5 minutes in milliseconds
+                        long fiveMinutesInMillis = 5 * 60 * 1000L; // 5 minutes in milliseconds
 
                         if (timeDifference > fiveMinutesInMillis) {
                             var ok = file.delete();
@@ -55,7 +55,7 @@ public class DirectoryUtils {
                         long lastModifiedTime = file.lastModified();
                         long currentTime = System.currentTimeMillis();
                         long timeDifference = currentTime - lastModifiedTime;
-                        long fiveMinutesInMillis = 5 * 60 * 1000; // 5 minutes in milliseconds
+                        long fiveMinutesInMillis = 5 * 60 * 1000L; // 5 minutes in milliseconds
 
                         if (timeDifference > fiveMinutesInMillis) {
                             var ok = file.delete();
@@ -77,7 +77,7 @@ public class DirectoryUtils {
                     long lastModifiedTime = file.lastModified();
                     long currentTime = System.currentTimeMillis();
                     long timeDifference = currentTime - lastModifiedTime;
-                    long fiveMinutesInMillis = 5 * 60 * 1000; // 5 minutes in milliseconds
+                    long fiveMinutesInMillis = 5 * 60 * 1000L; // 5 minutes in milliseconds
 
                     if (timeDifference > fiveMinutesInMillis) {
                         var ok = file.delete(); // Delete the file

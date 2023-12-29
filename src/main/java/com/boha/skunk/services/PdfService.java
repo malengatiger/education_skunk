@@ -39,14 +39,14 @@ public class PdfService {
 
     private final ExamLinkRepository examLinkRepository;
     private final CloudStorageService cloudStorageService;
-    public File getPdfPageImages(Long examLinkId) throws Exception {
+    public ExamLink getPdfPageImages(Long examLinkId) throws Exception {
         logger.info(mm+" get pdf page images for examLink: " + examLinkId);
         disableCerts();
         Optional<ExamLink> optionalPaper = examLinkRepository.findById(examLinkId);
         ExamLink examLink = optionalPaper.orElse(null); // Provide a default value if the optional is empty
         if (examLink != null) {
             if (examLink.getPageImageZipUrl() != null) {
-                return cloudStorageService.downloadFile(examLink.getPageImageZipUrl());
+                return examLink;
             }
             logger.info(mm+" get pdf file from examLink: " + examLink.getTitle());
             try {
@@ -57,13 +57,13 @@ public class PdfService {
                 FileUtils.copyURLToFile(url, pdfFile);
                 List<File> files = convertPdfToImages(pdfFile, dir);
                 File zip = createZipFile(files, dir, examLinkId);
-                String zipUrl = cloudStorageService.uploadFile(zip);
+                String zipUrl = cloudStorageService.uploadFile(zip, examLinkId);
                 examLink.setPageImageZipUrl(zipUrl);
                 examLinkRepository.updatePageImageZipUrlById(examLinkId, zipUrl);
                 logger.info(mm+"zip file created and uploaded: " + (zip.length()/1024)
                         + "K bytes. " + zip.getAbsolutePath()
                         + "\n CloudStorage url: \uD83D\uDD35 " + zipUrl);
-                return zip;
+                return examLink;
             } catch (Exception e) {
                 logger.severe(mm+"ERROR: " + e.getMessage());
             }

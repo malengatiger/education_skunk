@@ -78,11 +78,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         //allow localhost
-        if (url.contains("localhost")) {
+        if (url.contains("localhost") || url.contains("192.168.86.242")) {
             logger.info(mm + " contextPath: " + httpServletRequest.getContextPath()
                     + E.AMP + " requestURI: " + httpServletRequest.getRequestURI() + "\n\n");
-            logger.info(mm + " allowing call from localhost");
-
+            logger.info(mm + "  \uD83D\uDE0E \uD83D\uDE0E \uD83D\uDE0E allowing call from localhost or 192.168.86.242");
             doFilter(httpServletRequest, httpServletResponse, filterChain);
             return;
         }

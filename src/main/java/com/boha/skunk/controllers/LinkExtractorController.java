@@ -31,7 +31,7 @@ public class LinkExtractorController {
 
 
     @GetMapping("extractExamLinks")
-    public ResponseEntity<Object> extractExamLinks() throws IOException {
+    public ResponseEntity<Object> extractExamLinks() {
         try {
             var list = linkExtractorService.extractExamLinks();
             logger.info(mm+" extractExamLinks found: " + list.size() + " examLinks");
