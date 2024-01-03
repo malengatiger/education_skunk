@@ -142,9 +142,17 @@
             <artifactId>google-cloud-aiplatform</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.cloud</groupId>
-            <artifactId>google-cloud-vertexai</artifactId>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/io.r2dbc/r2dbc-spi -->
+        <dependency>
+            <groupId>io.r2dbc</groupId>
+            <artifactId>r2dbc-spi</artifactId>
+            <version>1.0.0.RELEASE</version>
+        </dependency>
+
 
     </dependencies>
     <dependencyManagement>

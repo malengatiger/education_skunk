@@ -4,17 +4,13 @@ import com.boha.skunk.data.ExamLink;
 import com.boha.skunk.services.PdfService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.File;
 import java.util.logging.Logger;
 
 @Controller
@@ -35,7 +31,7 @@ public class PdfController {
     @GetMapping("/createPdfPageImages")
     public ResponseEntity<ExamLink> createPdfPageImages(@RequestParam Long examLinkId) throws Exception {
 
-        ExamLink examLink = pdfService.getPdfPageImages(examLinkId);
+        ExamLink examLink = pdfService.generateExamLinkPdfPages(examLinkId);
 //        byte[] zipBytes = FileUtils.readFileToByteArray(zipFile);
 //
 //        HttpHeaders headers = new HttpHeaders();

@@ -4,16 +4,28 @@ import com.boha.skunk.data.Organization;
 import com.boha.skunk.data.User;
 import com.boha.skunk.data.UserRepository;
 import com.boha.skunk.services.OrganizationService;
+import com.boha.skunk.services.UserBatchService;
+import com.boha.skunk.services.YouTubeService;
 import com.boha.skunk.util.CustomErrorResponse;
+import com.boha.skunk.util.E;
+import com.google.common.io.Files;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.RequiredArgsConstructor;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/organizations")
@@ -21,7 +33,66 @@ import java.util.Optional;
 public class OrganizationController {
     private final OrganizationService organizationService;
     private final UserRepository userRepository;
+    private final UserBatchService userBatchService;
+    static final String mm = "\uD83C\uDF0D\uD83C\uDF0D\uD83C\uDF0D\uD83C\uDF0D " +
+            "OrganizationController \uD83D\uDD35";
+    static final Logger logger = Logger.getLogger(OrganizationController.class.getSimpleName());
+    static final Gson G = new GsonBuilder().setPrettyPrinting().create();
 
+
+    @PostMapping("uploadMemberFile")
+    public ResponseEntity<Object> uploadMemberFile(
+            @RequestParam Long organizationId,
+            @RequestPart MultipartFile document) throws IOException {
+
+        List<User> users = new ArrayList<>();
+        String doc = document.getOriginalFilename();
+        if (doc == null) {
+            return ResponseEntity.badRequest().body(
+                    new CustomErrorResponse(400,
+                            "Problem with user file ",
+                            new DateTime().toDateTimeISO().toString()));
+        }
+        File file = new File(doc);
+        Files.write(document.getBytes(), file);
+        logger.info("\uD83C\uDF3C\uD83C\uDF3C we have a file: " + file.getName());
+        if (file.getName().contains(".csv")) {
+            logger.info("\uD83C\uDF3C\uD83C\uDF3C csv file to process: " + file.getName());
+            try {
+                users = userBatchService.handleUsersFromCSV(file, organizationId);
+                return ResponseEntity.ok(users);
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().body(
+                        new CustomErrorResponse(400,
+                                "Failed to create users: " + e.getMessage(),
+                                new DateTime().toDateTimeISO().toString()));
+            }
+        }
+        if (file.getName().contains(".json")) {
+            logger.info("\uD83C\uDF3C\uD83C\uDF3C json file to process: " + file.getName());
+            try {
+                users = userBatchService.handleUsersFromJSON(file, organizationId);
+                return ResponseEntity.ok(users);
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().body(
+                        new CustomErrorResponse(400,
+                                "Failed to create users: " + e.getMessage(),
+                                new DateTime().toDateTimeISO().toString()));
+            }
+        }
+        if (file.exists()) {
+            boolean ok = file.delete();
+            if (ok) {
+                logger.info(E.RED_APPLE + E.RED_APPLE +
+                        " user batch file deleted");
+            }
+        }
+        logger.info("\uD83C\uDF3C\uD83C\uDF3C no users created ... wtf ");
+        return ResponseEntity.badRequest().body(
+                new CustomErrorResponse(400,
+                        "Failed to create users; no users in file or file is not .json or .csv ",
+                        new DateTime().toDateTimeISO().toString()));
+    }
 
     @GetMapping
     public ResponseEntity<List<Organization>> getAllOrganizations() {

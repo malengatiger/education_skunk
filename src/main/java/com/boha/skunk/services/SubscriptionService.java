@@ -114,9 +114,9 @@ public class SubscriptionService {
                 isValid = isCorporateSubscriptionValid(subscription);
             }
 
-        }
-        if (!isValid) {
-
+            default -> {
+                return false;
+            }
         }
 
         return isValid;
@@ -145,22 +145,22 @@ public class SubscriptionService {
 
     }
 
-    private boolean isFreeSubscriptionValid(Subscription subscription) throws Exception {
+    private boolean isFreeSubscriptionValid(Subscription subscription) {
 
         return true;
     }
 
-    private boolean isCorporateSubscriptionValid(Subscription subscription) throws Exception {
+    private boolean isCorporateSubscriptionValid(Subscription subscription) {
 
         return true;
     }
 
-    private boolean isMonthlySubscriptionValid(Subscription subscription) throws Exception {
+    private boolean isMonthlySubscriptionValid(Subscription subscription) {
 
         return true;
     }
 
-    private boolean isAnnualSubscriptionValid(Subscription subscription) throws Exception {
+    private boolean isAnnualSubscriptionValid(Subscription subscription) {
 
         return true;
     }

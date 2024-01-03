@@ -20,6 +20,7 @@ import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -39,13 +40,17 @@ public class LinkExtractorService {
     private final SubjectRepository subjectRepository;
     private final DataService dataService;
     private final PdfService pdfService;
+    private final AnswerLinkRepository answerLinkRepository;
+    private final ExamLinkRepository examLinkRepository;
 
-    public LinkExtractorService(ExamLinkService examLinkService, ExamDocumentRepository examDocumentRepository, SubjectRepository subjectRepository, DataService dataService, PdfService pdfService) {
+    public LinkExtractorService(ExamLinkService examLinkService, ExamDocumentRepository examDocumentRepository, SubjectRepository subjectRepository, DataService dataService, PdfService pdfService, AnswerLinkRepository answerLinkRepository, ExamLinkRepository examLinkRepository) {
         this.examLinkService = examLinkService;
         this.examDocumentRepository = examDocumentRepository;
         this.subjectRepository = subjectRepository;
         this.dataService = dataService;
         this.pdfService = pdfService;
+        this.answerLinkRepository = answerLinkRepository;
+        this.examLinkRepository = examLinkRepository;
         this.client = createHttpClient();
     }
 
@@ -87,8 +92,8 @@ public class LinkExtractorService {
      *
      * @return List<ExamLink>
      */
-    public List<ExamLink> extractExamLinks() throws IOException {
-        List<ExamLink> links = new ArrayList<>();
+    public List<Bag> extractExamLinks() throws IOException {
+        List<Bag> bags = new ArrayList<>();
         List<ExamDocument> docs = new ArrayList<>();
         long startTime = System.currentTimeMillis();
 
@@ -120,15 +125,15 @@ public class LinkExtractorService {
                                         + resultExamDocument.getId() + " title" + resultExamDocument.getTitle());
                                 try {
                                     Request mRequest = new Request.Builder()
-                                            .url(convertToAbsoluteLink(link))
+                                            .url(Objects.requireNonNull(convertToAbsoluteLink(link)))
                                             .build();
                                     try (Response mResponse = client.newCall(mRequest).execute()) {
                                         if (mResponse.isSuccessful() && mResponse.body() != null) {
                                             String html2 = mResponse.body().string();
-                                            links = extractDataFromHtml(resultExamDocument, html2);
+                                            bags = extractDataFromHtml(resultExamDocument, html2);
                                             logger.info(xx + "\n\nLinks and associated " +
                                                     " ... found on the destination page:"
-                                                    + resultExamDocument.getTitle() + "  \uD83E\uDD66 links extracted: " + links.size());
+                                                    + resultExamDocument.getTitle() + "  \uD83E\uDD66 bags extracted: " + bags.size());
                                             logger.info("\n\n\n");
                                         } else {
                                             logger.severe(xx + "Error: \uD83D\uDD34\uD83D\uDD34\uD83D\uDD34 "
@@ -146,8 +151,8 @@ public class LinkExtractorService {
                     }
 
                     logger.info("\n\n" + mm + "extractExamLinks: ... total ExamLinks: "
-                            + links.size());
-                    logger.info(mm + "extractExamLinks: ... total ExamDocuments (top level links): "
+                            + bags.size());
+                    logger.info(mm + "extractExamLinks: ... total ExamDocuments (top level bags): "
                             + docs.size() + "\n\n\n");
                 }
 
@@ -170,10 +175,10 @@ public class LinkExtractorService {
         String formattedElapsedTime = decimalFormat.format(elapsedTimeInSeconds);
 
         logger.info(mm + "Elapsed Time: " + formattedElapsedTime + " seconds (minutes) ; " + decimalFormat.format(elapsedTimeInSeconds / 60));
-        return links;
+        return bags;
     }
 
-    public String convertToAbsoluteLink(String relativeLink) {
+    private String convertToAbsoluteLink(String relativeLink) {
         HttpUrl baseHttpUrl = HttpUrl.parse(educUrl);
         assert baseHttpUrl != null;
         HttpUrl absoluteHttpUrl = baseHttpUrl.resolve(relativeLink);
@@ -183,10 +188,10 @@ public class LinkExtractorService {
         return null;
     }
 
-    public List<ExamLink> extractDataFromHtml(ExamDocument examDocument, String html) throws Exception {
+    private List<Bag> extractDataFromHtml(ExamDocument examDocument, String html) throws Exception {
         logger.info(mm + " extracting data from html .....");
         Document doc = Jsoup.parse(html);
-        List<ExamLink> examLinks = new ArrayList<>();
+        List<Bag> bags = new ArrayList<>();
         Elements sections = doc.select(".DnnModule-DNN_Documents");
         logger.info(mm + "Number of DNN_Documents sections: " + sections.size());
 
@@ -197,13 +202,14 @@ public class LinkExtractorService {
                 //todo - filter ethnic languages
                 logger.info(mm + "\uD83D\uDD34 \uD83D\uDD34 " +
                         "Subject Title Extracted: " + subject.getTitle());
-                examLinks = extractLinks(section, subject, examDocument);
+                var bag = extractLinks(section, subject, examDocument);
+                bags.add(bag);
             }
         }
 
         logger.info("\n\n" + mm + " ExamDocument extraction complete: " + examDocument.getTitle() +
-                " \uD83D\uDD35\uD83D\uDD35\uD83D\uDD35 " + examLinks.size());
-        return examLinks;
+                " \uD83D\uDD35\uD83D\uDD35\uD83D\uDD35 " + bags.size());
+        return bags;
     }
 
     boolean isEthnicLanguage(String title) {
@@ -252,11 +258,14 @@ public class LinkExtractorService {
         if (upperCase.contains("RELGIOUS") || upperCase.contains("RELIGIOUS")) {
             upperCase = "RELIGIOUS STUDIES";
         }
-        if (upperCase.contains("MATHEMATICS")) {
-            upperCase = "MATHEMATICS";
+        if (upperCase.contains("AGRICULTURAL MANGEMENT")) {
+            upperCase = "AGRICULTURAL MANAGEMENT PRACTICES";
         }
         if (upperCase.equalsIgnoreCase("ENGLISH")) {
             upperCase = "ENGLISH (LANGUAGE)";
+        }
+        if (upperCase.equalsIgnoreCase("COMPUTER APP")) {
+            upperCase = "COMPUTER APPLICATIONS TECHNOLOGY";
         }
         Subject subject = subjectRepository.findByTitleIgnoreCase(upperCase);
         if (subject == null) {
@@ -272,16 +281,29 @@ public class LinkExtractorService {
         return titleElement.text();
     }
 
-    private List<ExamLink> extractLinks(Element section, Subject subject, ExamDocument examDocument) throws Exception {
+    static class Bag {
+
+        List<ExamLink> examLinks;
+        List<AnswerLink> answerLinks;
+
+        public Bag(List<ExamLink> examLinks, List<AnswerLink> answerLinks) {
+            this.examLinks = examLinks;
+            this.answerLinks = answerLinks;
+        }
+    }
+    private Bag extractLinks(Element section, Subject subject, ExamDocument examDocument) throws Exception {
         List<ExamLink> examLinks = new ArrayList<>();
+        List<AnswerLink> answerLinks = new ArrayList<>();
+
         Elements links = section.select("div.DNN_Documents a");
         for (Element link : links) {
             String linkText = link.text();
             String linkUrl = link.attr("href");
             if (!linkText.equalsIgnoreCase("Download")) {
                 String uc = subject.getTitle().toUpperCase();
+                ExamLink examLink;
+                AnswerLink answerLink;
                 if (uc.contains("AFRIKAANS")
-
                         || uc.contains("SESOTHO")
                         || uc.contains("SETSWANA")
                         || uc.contains("ISIXHOSA")
@@ -293,55 +315,56 @@ public class LinkExtractorService {
                         || uc.contains("SEPEDI")) {
                     // Ignore
                 } else {
-                    if (!linkText.contains("Afrikaans")) {
-                        ExamLink examLink0 = new ExamLink();
-                        examLink0.setExamDocument(examDocument);
-                        examLink0.setLink(convertToAbsoluteLink(linkUrl));
-                        examLink0.setTitle(linkText);
-                        examLink0.setDocumentTitle(examDocument.getTitle());
-                        examLink0.setSubject(subject);
+                    if (!linkText.contains("Data Files")) {
+                        String uc2 = linkText.toUpperCase();
+                        if ( uc2.contains("MEMO")) {
+                            try {
+                                answerLink = new AnswerLink();
+                                answerLink.setDocumentTitle(examDocument.getTitle());
+                                answerLink.setExamDocument(examDocument);
+                                answerLink.setLink(convertToAbsoluteLink(linkUrl));
+                                answerLink.setTitle(linkText);
+                                answerLink = answerLinkRepository.save(answerLink);
+                                answerLink = dataService.extractAnswerText(answerLink.getId());
+                                answerLink = pdfService.generateAnswerLinkPdfPages(answerLink.getId());
+                                answerLinks.add(answerLink);
+                            } catch (Exception e) {
+                                logger.severe(mm + "ERROR: extractLinks(answers): " + e.getMessage());
+                            }
+                        } else {
+                            try {
+                                examLink = getExamLink(subject, examDocument, linkText, linkUrl);
+                                examLink = examLinkRepository.save(examLink);
+                                ExamLink examLink1 = dataService.extractExamPaperText(examLink.getId());
+                                examLink1 = pdfService.generateExamLinkPdfPages(examLink1.getId());
+                                examLinks.add(examLink1);
 
-                        var res = examLinkService.saveExamLink(examLink0);
-                        try {
-                            dataService.extractExamPaperText(res.getId());
-                        } catch (Exception e) {
-                            logger.severe(mm + "ERROR: dataService.extractExamPaperText: " + e.getMessage());
+                            } catch (Exception e) {
+                                logger.severe(mm + "ERROR: extractLinks(exams): " + e.getMessage());
+                            }
+
                         }
-                        try {
-                            res = pdfService.getPdfPageImages(res.getId());
-                        } catch (Exception e) {
-                            logger.severe(mm + "ERROR : pdfService.getPdfPageImages: " + e.getMessage());
-                        }
-                        //
-                        examLinks.add(res);
                     }
                 }
-
             }
         }
+        Bag bag = new Bag(examLinks, answerLinks);
         logger.info(mm + examLinks.size() +
-                " .... examLinks created for subject: " + subject.getTitle());
-        return examLinks;
+                " ... examLinks created for subject: " + subject.getTitle());
+        logger.info(mm + answerLinks.size() +
+                " ... answerLinks created for subject: " + subject.getTitle());
+        return bag;
     }
 
-    public String extractSentences(String text) {
-        List<String> sentences = new ArrayList<>();
+    private ExamLink getExamLink(Subject subject, ExamDocument examDocument, String linkText, String linkUrl) {
+        ExamLink examLink0 = new ExamLink();
+        examLink0.setExamDocument(examDocument);
+        examLink0.setLink(convertToAbsoluteLink(linkUrl));
+        examLink0.setTitle(linkText);
+        examLink0.setDocumentTitle(examDocument.getTitle());
+        examLink0.setSubject(subject);
 
-        // Split the text into sentences using a regular expression
-        String[] sentenceArray = text.split("[.!?]");
-
-        // Trim and add each sentence to the list
-        for (String sentence : sentenceArray) {
-            String trimmedSentence = sentence.trim();
-            if (!trimmedSentence.isEmpty()) {
-                sentences.add(trimmedSentence);
-            }
-        }
-        StringBuilder sb = new StringBuilder();
-        for (String sentence : sentences) {
-            sb.append(sentence).append("\n");
-        }
-
-        return sb.toString();
+        return examLink0;
     }
+
 }

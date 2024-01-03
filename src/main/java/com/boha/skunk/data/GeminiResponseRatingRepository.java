@@ -8,5 +8,5 @@ import java.util.List;
 @Repository
 public interface GeminiResponseRatingRepository extends JpaRepository<GeminiResponseRating, Long> {
 
-    List<GeminiResponseRating> findByExamPageImageId(Long examPageImageId);
+    List<GeminiResponseRating> findByExamLinkId(Long examPageImageId);
 }

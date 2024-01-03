@@ -23,6 +23,11 @@ public class ExamLinkService {
     private final SubjectRepository subjectRepository;
     private final GeminiResponseRatingRepository geminiResponseRatingRepository;
     private final ExamPageImageRepository examPageImageRepository;
+    private final AnswerLinkRepository answerLinkRepository;
+    private final AnswerPageImageRepository answerPageImageRepository;
+    private final ExamDocumentRepository examDocumentRepository;
+
+
     private final CloudStorageService cloudStorageService;
     static final String mm = "\uD83C\uDF3F\uD83C\uDF3F\uD83C\uDF3F ExamLinkService \uD83E\uDD43";
 
@@ -57,7 +62,7 @@ public class ExamLinkService {
         int index = 0;
         List<ExamPageImage> mList = new ArrayList<>();
         for (File file : files) {
-            String url = cloudStorageService.uploadFile(file,examLinkId);
+            String url = cloudStorageService.uploadFile(file,examLinkId, CloudStorageService.EXAM_FILE);
             ExamPageImage epi = new ExamPageImage();
             epi.setExamLink(examLink);
             epi.setDate(DateTime.now().toDateTimeISO().toString());
@@ -75,6 +80,52 @@ public class ExamLinkService {
         return list;
 
     }
+
+    public List<AnswerPageImage> getAnswerPageImages(Long examDocumentId) throws Exception {
+        List<AnswerPageImage> answerPageImages = answerPageImageRepository.findByExamDocumentId(examDocumentId);
+        if (!answerPageImages.isEmpty()) {
+            logger.info(mm + "AnswerPageImage exist already: \uD83E\uDD66\uD83E\uDD66 "
+                    + answerPageImages.size() + " pages");
+            return answerPageImages;
+        }
+        logger.info(mm + "download zip directory and " +
+                "create AnswerPageImage ...  \uD83E\uDD66\uD83E\uDD66 ");
+
+        Optional<ExamDocument> optionalExamDocument = examDocumentRepository.findById(examDocumentId);
+
+        ExamDocument examDocument;
+        if (optionalExamDocument.isPresent()) {
+            examDocument = optionalExamDocument.get();
+        } else {
+            throw new Exception("ExamDocument not found");
+        }
+        if (examDocument.getPageImageUrl().isEmpty()) {
+            throw new Exception("getPageImageUrl is null");
+        }
+        File zipDir = cloudStorageService.downloadFile(examDocument.getPageImageUrl());
+        List<File> files = extractFilesFromZip(zipDir);
+        int index = 0;
+        List<AnswerPageImage> mList = new ArrayList<>();
+        for (File file : files) {
+            String url = cloudStorageService.uploadFile(file,examDocumentId, CloudStorageService.ANSWER_FILE);
+            AnswerPageImage epi = new AnswerPageImage();
+            epi.setExamDocument(examDocument);
+            epi.setDate(DateTime.now().toDateTimeISO().toString());
+            epi.setDownloadUrl(url);
+            epi.setPageIndex(index);
+            epi.setMimeType(getFileType(file));
+            mList.add(epi);
+            index++;
+        }
+        logger.info(mm + "AnswerPageImages to be added: " + mList.size());
+        List<AnswerPageImage>  list = answerPageImageRepository.saveAll(mList);
+        logger.info(mm + "AnswerPageImages added OK: \uD83E\uDD66\uD83E\uDD66 "
+                + list.size() + " .... returning ...");
+
+        return list;
+
+    }
+
     public String getFileType(File file) {
         String fileName = file.getName();
         int dotIndex = fileName.lastIndexOf(".");
@@ -150,17 +201,23 @@ public class ExamLinkService {
 
         List<ExamPageImage> images = examPageImageRepository.findByExamLinkId(examLinkId);
         for (ExamPageImage image : images) {
-            var list = geminiResponseRatingRepository.findByExamPageImageId(image.getId());
+            var list = geminiResponseRatingRepository.findByExamLinkId(image.getId());
             ratings.addAll(list);
         }
         logger.info(mm + " ... getExamRatings ... found: " + ratings.size());
         return ratings;
     }
+    public List<ExamDocument> getExamDocuments() {
 
+        List<ExamDocument> docs = examDocumentRepository.findAll();
+        logger.info(mm + " ... getExamDocuments ... found: " + docs.size());
+        return docs;
+    }
     public List<ExamPageImage> addExamImages(ExamPageImage examPageImage, List<File> imageFiles) throws IOException {
         List<ExamPageImage> list = new ArrayList<>();
         for (File imageFile : imageFiles) {
-            String url = cloudStorageService.uploadFile(imageFile, examPageImage.getExamLink().getId());
+            String url = cloudStorageService.uploadFile(imageFile, examPageImage.getExamLink().getId(),
+                    CloudStorageService.EXAM_FILE);
             examPageImage.setDownloadUrl(url);
             ExamPageImage res = examPageImageRepository.save(examPageImage);
             list.add(res);

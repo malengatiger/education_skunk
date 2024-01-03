@@ -9,9 +9,10 @@ public class GeminiResponseRating {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "exam_page_image_id")
-    private Long examPageImageId;
-
+    @Column(name = "page_number")
+    int pageNumber;
+    @Column(name = "exam_link_id")
+    Long examLinkId;
     @Column(name = "rating")
     int rating;
     @Column(name = "date")
@@ -45,12 +46,20 @@ public class GeminiResponseRating {
         this.prompt = prompt;
     }
 
-    public Long getExamPageImageId() {
-        return examPageImageId;
+    public int getPageNumber() {
+        return pageNumber;
     }
 
-    public void setExamPageImageId(Long examPageImageId) {
-        this.examPageImageId = examPageImageId;
+    public void setPageNumber(int pageNumber) {
+        this.pageNumber = pageNumber;
+    }
+
+    public Long getExamLinkId() {
+        return examLinkId;
+    }
+
+    public void setExamLinkId(Long examLinkId) {
+        this.examLinkId = examLinkId;
     }
 
     public int getRating() {

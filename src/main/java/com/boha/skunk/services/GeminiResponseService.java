@@ -25,8 +25,8 @@ public class GeminiResponseService {
         logger.info(mm+" rating added to db " + r.getRating());
         return r;
     }
-    public List<GeminiResponseRating> getExamRatingsByPage(Long examPageId) {
-        return geminiResponseRatingRepository.findByExamPageImageId(examPageId);
+    public List<GeminiResponseRating> getExamRatingsByPage(Long examLinkId) {
+        return geminiResponseRatingRepository.findByExamLinkId(examLinkId);
     }
     public List<GeminiResponseRating> getPageRatingsByExam(Long examLinkId) throws Exception {
         ExamLink examLink;

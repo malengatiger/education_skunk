@@ -1,5 +1,6 @@
 package com.boha.skunk.controllers;
 
+import com.boha.skunk.data.ExamLink;
 import com.boha.skunk.services.DataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class DataController {
         logger.info(mm+" extractExamPaperText starting: examLinkId: " + examLinkId
                 + "  \uD83D\uDD90\uD83C\uDFFE");
         try {
-            String text = dataService.extractExamPaperText(examLinkId);
+            ExamLink text = dataService.extractExamPaperText(examLinkId);
             logger.info(mm+" extractExamPaperText completed: examLinkId: " + examLinkId
                     + "  \uD83D\uDD90\uD83C\uDFFE");
             return ResponseEntity.ok(text);

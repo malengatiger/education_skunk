@@ -1,9 +1,6 @@
 package com.boha.skunk.controllers;
 
-import com.boha.skunk.data.ExamLink;
-import com.boha.skunk.data.ExamPageImage;
-import com.boha.skunk.data.GeminiResponseRating;
-import com.boha.skunk.data.Subject;
+import com.boha.skunk.data.*;
 import com.boha.skunk.services.ExamLinkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -55,6 +52,12 @@ public class ExamLinkController {
         logger.info(mm + "response ratings found: " + list.size());
         return ResponseEntity.ok().body(list);
     }
+    @GetMapping("/getExamDocuments")
+    public ResponseEntity<List<ExamDocument>> getExamDocuments() {
+
+        var list = examLinkService.getExamDocuments();
+        return ResponseEntity.ok().body(list);
+    }
 
     @GetMapping("/getSubjectExamLinks")
     public ResponseEntity<List<ExamLink>> getSubjectExamLinks(@RequestParam Long subjectId) {
@@ -79,7 +82,19 @@ public class ExamLinkController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    @GetMapping("/getAnswerPageImages")
+    public ResponseEntity<List<AnswerPageImage>> getAnswerPageImages(@RequestParam Long examDocumentId) {
+        logger.info(mm + "............... getExamPageImages ..... ");
 
+        try {
+            var list = examLinkService.getAnswerPageImages(examDocumentId);
+            return ResponseEntity.ok().body(list);
+
+        } catch (Exception e) {
+            logger.severe(mm + "Error getting answer page images: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
     private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
         File file = new File(Objects.requireNonNull(multipartFile.getOriginalFilename()));
         try (OutputStream outputStream = new FileOutputStream(file)) {

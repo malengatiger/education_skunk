@@ -21,7 +21,6 @@ public class ExamLink {
     private Subject subject;
 
 
-
     @Column(name = "exam_text", columnDefinition = "TEXT")
 
     private String examText;

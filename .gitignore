@@ -23,7 +23,9 @@
 hs_err_pid*
 replay_pid*
 
-pdfs/*
-.idea/sonarlint/*
-.idea/*
+.idea/
 .env*
+answer_page_images/
+cloudstorage/
+exam_page_images/
+pdfs/

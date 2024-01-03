@@ -5,6 +5,7 @@ import com.google.firebase.database.annotations.NotNull;
 import jakarta.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -12,7 +13,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -20,10 +26,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import javax.sql.DataSource;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 @SpringBootApplication
@@ -49,6 +52,7 @@ public class SkunkApplication implements ApplicationListener<ApplicationReadyEve
 				+ event.getTimestamp());
 		logger.info(mm+"servletContext path: \uD83D\uDD90\uD83C\uDFFD "+servletContext.getContextPath());
 		showApis(event);
+//		findAnnotatedClasses();
 		InetAddress ip;
 		try {
 			ip = InetAddress.getLocalHost();
@@ -59,6 +63,32 @@ public class SkunkApplication implements ApplicationListener<ApplicationReadyEve
 			e.printStackTrace();
 		}
 	}
+	public void findAnnotatedClasses() {
+
+		ClassPathScanningCandidateComponentProvider scanner =
+				new ClassPathScanningCandidateComponentProvider(false);
+		scanner.addIncludeFilter(new AnnotationTypeFilter(Service.class));
+		scanner.addIncludeFilter(new AnnotationTypeFilter(Component.class));
+//		scanner.addIncludeFilter(new AnnotationTypeFilter(ComponentScan.Filter.class));
+
+
+		Set<BeanDefinition> beanDefinitions = scanner.findCandidateComponents("");
+
+		for (org.springframework.beans.factory.config.BeanDefinition beanDefinition :
+				beanDefinitions) {
+			try {
+				Class<?> annotatedClass = Class.forName(
+						beanDefinition.getBeanClassName());
+				logger.info(E.PEAR + E.PEAR + E.PEAR + E.PEAR
+						+ " Service/Component/Filter Name : " + annotatedClass.getSimpleName());
+
+			} catch (ClassNotFoundException e) {
+				// Handle the exception if needed
+			}
+		}
+
+	}
+
 
 	@Override
 	public boolean supportsAsyncExecution() {
