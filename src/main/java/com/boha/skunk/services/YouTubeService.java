@@ -14,7 +14,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -33,10 +32,7 @@ public class YouTubeService {
     static final Logger logger = Logger.getLogger(YouTubeService.class.getSimpleName());
     static final Gson G = new GsonBuilder().setPrettyPrinting().create();
     private final YouTube youTube;
-    @Autowired
-    private YoutubeDataRepository youtubeDataRepository;
-    @Autowired
-    private TagRepository tagRepository;
+
     @Value("${API_KEY}")
     private String apiKey;
 
@@ -82,16 +78,16 @@ public class YouTubeService {
             Long maxResults, Subject subject, int tagType) throws IOException {
         List<String> list = new ArrayList<>();
         list.add("video");
-        List<Tag> tags = tagRepository.findBySubjectIdAndTagType(subject.getId(), tagType);
-        StringBuilder sb = new StringBuilder();
-        sb.append(subject.getTitle()).append(" ");
-        for (Tag tag : tags) {
-            if (tag.getTagType() == tagType) {
-                sb.append(tag.getText()).append(" ");
-            }
-        }
-        logger.info(mm + "query string: " + sb.toString());
-        var results = search(sb.toString(), list, maxResults, subject);
+//        List<Tag> tags = tagRepository.findBySubjectIdAndTagType(subject.getId(), tagType);
+//        StringBuilder sb = new StringBuilder();
+//        sb.append(subject.getTitle()).append(" ");
+//        for (Tag tag : tags) {
+//            if (tag.getTagType() == tagType) {
+//                sb.append(tag.getText()).append(" ");
+//            }
+//        }
+        logger.info(mm + "query string: " + subject.getTitle());
+        var results = search(subject.getTitle(), list, maxResults, subject);
         logger.info(mm+" video search found: " + results.size() + " YouTube videos\n\n");
         return results;
     }
@@ -139,21 +135,7 @@ public class YouTubeService {
             YouTubeData youTubeData = new YouTubeData(channelId, channelTitle, videoId,
                     playlistId, title, description, high, med, def, subject);
 
-            try {
-                var d2 = youtubeDataRepository.save(youTubeData);
-                logger.info(mm + "YouTube youTubeDataList added to Postgres, id:  " + d2.getId() +
-                        " \uD83E\uDD6C \uD83E\uDD6C " + d2.getTitle()
-                        + "  \uD83E\uDD6C subject: " + subject.getTitle() + " \n");
-                youTubeDataList.add(d2);
-            } catch (DataIntegrityViolationException e) {
-                var  d3 = youtubeDataRepository.findByChannelIdAndVideoId(channelId,videoId);
-                duplicates.add(d3);
-                logger.info(mm + "\uD83D\uDC7F\uD83D\uDC7F Data not saved in database, " +
-                        " \uD83D\uDC7F\uD83D\uDC7F\uD83D\uDC7F duplicate #" + duplicates.size() +
-                        " ignored! \n \uD83D\uDC7F" + d3.getTitle());
 
-
-            }
 
         }
         youTubeDataList.addAll(duplicates);

@@ -1,31 +1,30 @@
 package com.boha.skunk.data;
 
 
-import jakarta.persistence.*;
 
 import java.util.List;
 
-@Entity
-@Table(name = "states")
+
+//@Table(name = "states")
 public class State {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "country_id")
+    //
+    //(name = "country_id")
     private Country country;
 
-    @OneToMany(mappedBy = "state")
+    //@Table(mappedBy = "state")
     private List<City> cities;
 
-    @Column(name = "name")
+   //@Column(name = "name")
     private String name;
 
-    @Column(name = "latitude")
+   //@Column(name = "latitude")
     private double latitude;
 
-    @Column(name = "longitude")
+   //@Column(name = "longitude")
     private double longitude;
     //
 

@@ -1,29 +1,32 @@
 package com.boha.skunk.data;
 
-import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
 
-@Entity
-@Table(name = "subjects")
+
+//@Table(name = "subjects")
 
 public class Subject {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @OneToMany(mappedBy = "subject")
+    //@Table(mappedBy = "subject")
     List<ExamLink> examLinks;
 
-    @OneToMany(mappedBy = "subject")
+    //@Table(mappedBy = "subject")
     List<YouTubeData> youTubeData;
 
-    @Column(name = "title", unique = true) // Add unique constraint
+   //@Column(name = "title", unique = true) // Add unique constraint
     String title;
 
 
     public Subject() {
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Subject(String title) {

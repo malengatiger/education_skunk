@@ -1,37 +1,36 @@
 package com.boha.skunk.data;
 
-import jakarta.persistence.*;
 
 import java.util.List;
 
-@Entity
-@Table(name = "Organization")
+
+//@Table(name = "Organization")
 
 public class Organization {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @OneToMany(mappedBy = "organization")
+    //@Table(mappedBy = "organization")
     List<Subscription> subscriptions;
 
-    @OneToMany(mappedBy = "organization")
+    //@Table(mappedBy = "organization")
     List<User> users;
 
-    @ManyToOne
-    @JoinColumn(name = "country_id")
+    //
+    //(name = "country_id")
     private Country country;
 
-    @ManyToOne
-    @JoinColumn(name = "city_id")
+    //
+    //(name = "city_id")
     private City city;
 
-    @Column(name = "name")
+   //@Column(name = "name")
     String name;
 
-    @Column(name = "email", columnDefinition = "TEXT")
+   //@Column(name = "email", columnDefinition = "TEXT")
     String email;
-    @Column(name = "cellphone")
+   //@Column(name = "cellphone")
     String cellphone;
 
     public Organization() {
@@ -41,6 +40,18 @@ public class Organization {
         this.name = name;
         this.email = email;
         this.cellphone = cellphone;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public City getCity() {
+        return city;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
     }
 
     public List<Subscription> getSubscriptions() {

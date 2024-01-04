@@ -39,6 +39,6 @@ public class ElapsedTimeFilter implements Filter {
                 + " \uD83D\uDD52 Elapsed Time: " + elapsedSeconds
                 + " seconds");
 
-        DirectoryUtils.deleteFilesInDirectory();
+        DirectoryUtils.deleteFilesInDirectories();
     }
 }

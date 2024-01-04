@@ -1,50 +1,39 @@
 package com.boha.skunk.data;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "youtube_data",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"channel_id", "video_id"}),
-        indexes = {
-                @Index(name = "idx_channel_id", columnList = "channel_id"),
-                @Index(name = "idx_video_id", columnList = "video_id"),
-                @Index(name = "idx_title", columnList = "title"),
-                @Index(name = "idx_channel_title", columnList = "channel_title")
-        })
 
 public class YouTubeData {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column(name = "title")
+   //@Column(name = "title")
     String title;
-    @Column(name = "description", columnDefinition = "TEXT")
+   //@Column(name = "description", columnDefinition = "TEXT")
     String description;
-    @Column(name = "channel_id")
+   //@Column(name = "channel_id")
     String channelId;
-    @Column(name = "channel_title")
+   //@Column(name = "channel_title")
     String channelTitle;
-    @Column(name = "video_id")
+   //@Column(name = "video_id")
     String videoId;
-    @Column(name = "playlist_id")
+   //@Column(name = "playlist_id")
     String playlistId;
-    @Column(name = "video_url", columnDefinition = "TEXT")
+   //@Column(name = "video_url", columnDefinition = "TEXT")
     String videoUrl;
-    @Column(name = "channel_url", columnDefinition = "TEXT")
+   //@Column(name = "channel_url", columnDefinition = "TEXT")
     String channelUrl;
-    @Column(name = "playlist_url", columnDefinition = "TEXT")
+   //@Column(name = "playlist_url", columnDefinition = "TEXT")
     String playlistUrl;
 
-    @Column(name = "thumbnailHigh", columnDefinition = "TEXT")
+   //@Column(name = "thumbnailHigh", columnDefinition = "TEXT")
     String thumbnailHigh;
-    @Column(name = "thumbnailMedium", columnDefinition = "TEXT")
+   //@Column(name = "thumbnailMedium", columnDefinition = "TEXT")
     String thumbnailMedium;
 
-    @Column(name = "thumbnailDefault", columnDefinition = "TEXT")
+   //@Column(name = "thumbnailDefault", columnDefinition = "TEXT")
     String thumbnailDefault;
 
-    @ManyToOne
-    @JoinColumn(name = "subject_id")
+    //
+    //(name = "subject_id")
     Subject subject;
 
     static final String VIDEO = "https://www.youtube.com/watch?v=";

@@ -1,12 +1,11 @@
 package com.boha.skunk.data;
 
-import jakarta.persistence.*;
 
 import java.util.List;
 
 /*
 model City {
-  id            Int            @id @default(autoincrement())
+  id            Int             @default(autoincrement())
   name          String
   latitude      Float
   longitude     Float
@@ -21,25 +20,25 @@ model City {
   @@unique([stateId, name])
 }
  */
-@Entity
-@Table(name = "City")
+
+//@Table(name = "City")
 public class City {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
+    
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+   //@Column(name = "id", nullable = false)
     private Long id;
 
     String name;
     double latitude;
     double longitude;
-    @ManyToOne
-    @JoinColumn(name = "state_id")
+    //
+    //(name = "state_id")
     State state;
-    @ManyToOne
-    @JoinColumn(name = "country_id")
+    //
+    //(name = "country_id")
     Country country;
 
-    @OneToMany(mappedBy = "city")
+    //@Table(mappedBy = "city")
     List<Organization> organizations;
 
     public Long getId() {

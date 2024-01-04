@@ -1,25 +1,24 @@
 package com.boha.skunk.data;
 
-import jakarta.persistence.*;
 
-@Entity
-@Table(name = "gemini_response_rating")
+
+//@Table(name = "gemini_response_rating")
 public class GeminiResponseRating {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "page_number")
+   //@Column(name = "page_number")
     int pageNumber;
-    @Column(name = "exam_link_id")
+   //@Column(name = "exam_link_id")
     Long examLinkId;
-    @Column(name = "rating")
+   //@Column(name = "rating")
     int rating;
-    @Column(name = "date")
+   //@Column(name = "date")
     String date;
-    @Column(name = "response_text", columnDefinition = "TEXT")
+   //@Column(name = "response_text", columnDefinition = "TEXT")
     private String responseText;
-    @Column(name = "prompt", columnDefinition = "TEXT")
+   //@Column(name = "prompt", columnDefinition = "TEXT")
     private String prompt;
      public GeminiResponseRating() {
     }
@@ -60,6 +59,10 @@ public class GeminiResponseRating {
 
     public void setExamLinkId(Long examLinkId) {
         this.examLinkId = examLinkId;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public int getRating() {

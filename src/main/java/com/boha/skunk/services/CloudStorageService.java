@@ -23,7 +23,7 @@ public class CloudStorageService {
 
     private final Storage storage;
     static final String mm = "\uD83C\uDF0D\uD83C\uDF0D\uD83C\uDF0D\uD83C\uDF0D CloudStorageService \uD83D\uDD35";
-    static final Logger logger = Logger.getLogger(LinkExtractorService.class.getSimpleName());
+    static final Logger logger = Logger.getLogger(CloudStorageService.class.getSimpleName());
     static final Gson G = new GsonBuilder().setPrettyPrinting().create();
 
     public CloudStorageService() throws IOException {

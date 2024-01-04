@@ -72,7 +72,7 @@ public class Downloader {
         return outputFile;
     }
     public static File createDirectoryIfNotExists() throws IOException {
-        Path path = Paths.get("pdfs/examTables");
+        Path path = Paths.get("pdfs/exam//@Tables");
         if (!Files.exists(path)) {
             Files.createDirectories(path);
         }

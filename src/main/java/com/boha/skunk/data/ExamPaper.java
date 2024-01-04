@@ -1,25 +1,24 @@
 package com.boha.skunk.data;
 
-import jakarta.persistence.*;
 
-@Entity
-@Table(name = "exam_papers")
+
+//@Table(name = "exam_papers")
 public class ExamPaper {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "exam_id")
+    //
+    //(name = "exam_id")
     private ExamLink examLink;
 
-    @Column(name = "title")
+   //@Column(name = "title")
     private String title;
 
-    @Column(name = "text", columnDefinition = "TEXT")
+   //@Column(name = "text", columnDefinition = "TEXT")
     private String text;
 
-    @Column(name = "date")
+   //@Column(name = "date")
     private String date;
 
 

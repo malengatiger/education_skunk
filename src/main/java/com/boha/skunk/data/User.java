@@ -1,48 +1,37 @@
 package com.boha.skunk.data;
 
 
-import jakarta.persistence.*;
 
 import java.util.List;
 
-@Entity
-@Table(name = "users",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"organization_id", "email"}),
-                @UniqueConstraint(columnNames = {"email"}),
-                @UniqueConstraint(columnNames = {"cellphone"})
-        },
-        indexes = {
-                @Index(name = "idx_organization_id", columnList = "organization_id")
-        })
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "organization_id")
+    //
+    //(name = "organization_id")
     private Organization organization;
 
-    @OneToMany(mappedBy = "user")
+    //@Table(mappedBy = "user")
     List<Subscription> subscriptions;
 
-    @Column(name = "first_name")
+   //@Column(name = "first_name")
     private String firstName;
 
-    @Column(name = "last_name")
+   //@Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "email")
+   //@Column(name = "email")
     private String email;
 
-    @Column(name = "cellphone")
+   //@Column(name = "cellphone")
     private String cellphone;
 
-    @Column(name = "firebase_user_id")
+   //@Column(name = "firebase_user_id")
     private String firebaseUserId;
 
-    @Column(name = "active_flag")
+   //@Column(name = "active_flag")
     private boolean activeFlag;
     public User() {
     }
@@ -97,6 +86,10 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getCellphone() {

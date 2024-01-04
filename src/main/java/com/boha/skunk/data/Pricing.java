@@ -1,20 +1,15 @@
 package com.boha.skunk.data;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 
-@Entity()
-@Table(name = "pricing")
+//@Table(name = "pricing")
 public class Pricing {
-    @jakarta.persistence.Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+   //@Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "country_id")
+    //
+    //(name = "country_id")
     private Country country;
     private String date;
     private String currency;

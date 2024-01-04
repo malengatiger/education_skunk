@@ -1,26 +1,25 @@
 package com.boha.skunk.data;
 
-import jakarta.persistence.*;
 
-@Entity
-@Table(name = "exam_page_images")
+
+//@Table(name = "exam_page_images")
 public class ExamPageImage {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "exam_link_id")
+    //
+    //(name = "exam_link_id")
     private ExamLink examLink;
 
-    @Column(name = "download_url", columnDefinition = "TEXT")
+   //@Column(name = "download_url", columnDefinition = "TEXT")
     String downloadUrl;
 
-    @Column(name = "page_index")
+   //@Column(name = "page_index")
     int pageIndex;
-    @Column(name = "date")
+   //@Column(name = "date")
     String date;
-    @Column(name = "mime_type")
+   //@Column(name = "mime_type")
     String mimeType;
     public ExamPageImage() {
     }

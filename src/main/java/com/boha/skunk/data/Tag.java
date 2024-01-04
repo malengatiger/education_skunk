@@ -1,29 +1,22 @@
 package com.boha.skunk.data;
 
-import jakarta.persistence.*;
 import lombok.Data;
 
-@Entity
-@Table(name = "tags",
-        uniqueConstraints = @UniqueConstraint(
-                columnNames = {"subject_id", "text", "tag_type"}),
-        indexes = {
-                @Index(name = "idx_subject_id", columnList = "subject_id")
-        })
+
 
 public class Tag {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "subject_id")
+    //
+    //(name = "subject_id")
     private Subject subject;
 
-    @Column(name = "text")
+   //@Column(name = "text")
     private String text;
 
-    @Column(name = "tag_type")
+   //@Column(name = "tag_type")
     private int tagType;
 
     public Tag() {

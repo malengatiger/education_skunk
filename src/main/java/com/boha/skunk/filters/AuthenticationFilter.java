@@ -1,7 +1,6 @@
 package com.boha.skunk.filters;
 
 import com.boha.skunk.data.User;
-import com.boha.skunk.data.UserRepository;
 import com.boha.skunk.util.CustomErrorResponse;
 import com.boha.skunk.util.E;
 import com.google.api.core.ApiFuture;
@@ -37,7 +36,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private static final Gson G = new GsonBuilder().setPrettyPrinting().create();
 //    private final DataService dataService;
 //    private final GioSubscriptionService subscriptionService;
-    private final UserRepository userRepository;
     @Value("${spring.profiles.active}")
     private String profile;
 
@@ -99,15 +97,15 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             if (mToken != null) {
                 String userId = mToken.getUid();
 
-                User user = userRepository.findByFirebaseUserId(userId);
-                if (user == null) {
-                    logger.info("\uD83D\uDE21 \uD83D\uDE21 \uD83D\uDE21  user unknown, possible new registration");
-                    doFilter(httpServletRequest, httpServletResponse, filterChain);
-                    return;
-                }
-                boolean subscriptionIsValid = false;
-                Long id = user.getOrganization().getId();
-                logger.info("\uD83D\uDE21 \uD83D\uDE21 \uD83D\uDE21 organizationId: " + id);
+//                User user = userRepository.findByFirebaseUserId(userId);
+//                if (user == null) {
+//                    logger.info("\uD83D\uDE21 \uD83D\uDE21 \uD83D\uDE21  user unknown, possible new registration");
+//                    doFilter(httpServletRequest, httpServletResponse, filterChain);
+//                    return;
+//                }
+//                boolean subscriptionIsValid = false;
+//                Long id = user.getOrganization().getId();
+//                logger.info("\uD83D\uDE21 \uD83D\uDE21 \uD83D\uDE21 organizationId: " + id);
 //                if (id != null) {
 //                    subscriptionIsValid = subscriptionService.isSubscriptionValid(id);
 //                }

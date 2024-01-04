@@ -90,18 +90,18 @@ if $mingw ; then
 fi
 
 if [ -z "$JAVA_HOME" ]; then
-  javaExecutable="$(which javac)"
-  if [ -n "$javaExecutable" ] && ! [ "$(expr "\"$javaExecutable\"" : '\([^ ]*\)')" = "no" ]; then
+  javaExecu//@Table="$(which javac)"
+  if [ -n "$javaExecu//@Table" ] && ! [ "$(expr "\"$javaExecu//@Table\"" : '\([^ ]*\)')" = "no" ]; then
     # readlink(1) is not available as standard on Solaris 10.
     readLink=$(which readlink)
     if [ ! "$(expr "$readLink" : '\([^ ]*\)')" = "no" ]; then
       if $darwin ; then
-        javaHome="$(dirname "\"$javaExecutable\"")"
-        javaExecutable="$(cd "\"$javaHome\"" && pwd -P)/javac"
+        javaHome="$(dirname "\"$javaExecu//@Table\"")"
+        javaExecu//@Table="$(cd "\"$javaHome\"" && pwd -P)/javac"
       else
-        javaExecutable="$(readlink -f "\"$javaExecutable\"")"
+        javaExecu//@Table="$(readlink -f "\"$javaExecu//@Table\"")"
       fi
-      javaHome="$(dirname "\"$javaExecutable\"")"
+      javaHome="$(dirname "\"$javaExecu//@Table\"")"
       javaHome=$(expr "$javaHome" : '\(.*\)/bin')
       JAVA_HOME="$javaHome"
       export JAVA_HOME
@@ -112,7 +112,7 @@ fi
 if [ -z "$JAVACMD" ] ; then
   if [ -n "$JAVA_HOME"  ] ; then
     if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
-      # IBM's JDK on AIX uses strange locations for the executables
+      # IBM's JDK on AIX uses strange locations for the execu//@Tables
       JAVACMD="$JAVA_HOME/jre/sh/java"
     else
       JAVACMD="$JAVA_HOME/bin/java"

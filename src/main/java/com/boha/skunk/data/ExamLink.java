@@ -1,42 +1,44 @@
 package com.boha.skunk.data;
 
 
-import jakarta.persistence.*;
 
 import java.util.List;
 
-@Entity
-@Table(name = "exam_links")
+
+//@Table(name = "exam_links")
 public class ExamLink {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "document_id")
+    //
+    //(name = "document_id")
     private ExamDocument examDocument;
 
-    @ManyToOne
-    @JoinColumn(name = "subject_id")
+    //
+    //(name = "subject_id")
     private Subject subject;
 
 
-    @Column(name = "exam_text", columnDefinition = "TEXT")
+   //@Column(name = "exam_text", columnDefinition = "TEXT")
 
     private String examText;
 
-    @Column(name = "link", columnDefinition = "TEXT")
+   //@Column(name = "link", columnDefinition = "TEXT")
     private String link;
 
-    @Column(name = "title")
+   //@Column(name = "title")
     private String title;
 
-    @Column(name = "document_title")
+   //@Column(name = "document_title")
     private String documentTitle;
 
-    @Column(name = "page_image_zip_url", columnDefinition = "TEXT")
+   //@Column(name = "page_image_zip_url", columnDefinition = "TEXT")
     private String pageImageZipUrl;
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getExamText() {
         return examText;

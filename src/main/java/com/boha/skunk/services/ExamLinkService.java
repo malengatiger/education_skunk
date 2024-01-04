@@ -19,13 +19,6 @@ import java.util.zip.ZipInputStream;
 @Service
 @RequiredArgsConstructor
 public class ExamLinkService {
-    private final ExamLinkRepository examLinkRepository;
-    private final SubjectRepository subjectRepository;
-    private final GeminiResponseRatingRepository geminiResponseRatingRepository;
-    private final ExamPageImageRepository examPageImageRepository;
-    private final AnswerLinkRepository answerLinkRepository;
-    private final AnswerPageImageRepository answerPageImageRepository;
-    private final ExamDocumentRepository examDocumentRepository;
 
 
     private final CloudStorageService cloudStorageService;
@@ -36,95 +29,8 @@ public class ExamLinkService {
     @Value("${educUrl}")
     private String educUrl;
 
-    public List<ExamPageImage> getExamPageImages(Long examLinkId) throws Exception {
-        List<ExamPageImage> examPageImages = examPageImageRepository.findByExamLinkId(examLinkId);
-        if (!examPageImages.isEmpty()) {
-            logger.info(mm + "ExamPageImages exist already: \uD83E\uDD66\uD83E\uDD66 "
-                    + examPageImages.size() + " pages");
-            return examPageImages;
-        }
-        logger.info(mm + "download zip directory and " +
-                "create ExamPageImages ...  \uD83E\uDD66\uD83E\uDD66 ");
+    private final SgelaFirestoreService firestoreService;
 
-        Optional<ExamLink> examLinkOptional = examLinkRepository.findById(examLinkId);
-
-        ExamLink examLink;
-        if (examLinkOptional.isPresent()) {
-            examLink = examLinkOptional.get();
-        } else {
-            throw new Exception("ExamLink not found");
-        }
-        if (examLink.getPageImageZipUrl().isEmpty()) {
-            throw new Exception("getPageImageZipUrl is null");
-        }
-        File zipDir = cloudStorageService.downloadFile(examLink.getPageImageZipUrl());
-        List<File> files = extractFilesFromZip(zipDir);
-        int index = 0;
-        List<ExamPageImage> mList = new ArrayList<>();
-        for (File file : files) {
-            String url = cloudStorageService.uploadFile(file,examLinkId, CloudStorageService.EXAM_FILE);
-            ExamPageImage epi = new ExamPageImage();
-            epi.setExamLink(examLink);
-            epi.setDate(DateTime.now().toDateTimeISO().toString());
-            epi.setDownloadUrl(url);
-            epi.setPageIndex(index);
-            epi.setMimeType(getFileType(file));
-            mList.add(epi);
-            index++;
-        }
-        logger.info(mm + "ExamPageImages to be added: " + mList.size());
-        List<ExamPageImage>  list = examPageImageRepository.saveAll(mList);
-        logger.info(mm + "ExamPageImages added OK: \uD83E\uDD66\uD83E\uDD66 "
-                + list.size() + " .... returning ...");
-
-        return list;
-
-    }
-
-    public List<AnswerPageImage> getAnswerPageImages(Long examDocumentId) throws Exception {
-        List<AnswerPageImage> answerPageImages = answerPageImageRepository.findByExamDocumentId(examDocumentId);
-        if (!answerPageImages.isEmpty()) {
-            logger.info(mm + "AnswerPageImage exist already: \uD83E\uDD66\uD83E\uDD66 "
-                    + answerPageImages.size() + " pages");
-            return answerPageImages;
-        }
-        logger.info(mm + "download zip directory and " +
-                "create AnswerPageImage ...  \uD83E\uDD66\uD83E\uDD66 ");
-
-        Optional<ExamDocument> optionalExamDocument = examDocumentRepository.findById(examDocumentId);
-
-        ExamDocument examDocument;
-        if (optionalExamDocument.isPresent()) {
-            examDocument = optionalExamDocument.get();
-        } else {
-            throw new Exception("ExamDocument not found");
-        }
-        if (examDocument.getPageImageUrl().isEmpty()) {
-            throw new Exception("getPageImageUrl is null");
-        }
-        File zipDir = cloudStorageService.downloadFile(examDocument.getPageImageUrl());
-        List<File> files = extractFilesFromZip(zipDir);
-        int index = 0;
-        List<AnswerPageImage> mList = new ArrayList<>();
-        for (File file : files) {
-            String url = cloudStorageService.uploadFile(file,examDocumentId, CloudStorageService.ANSWER_FILE);
-            AnswerPageImage epi = new AnswerPageImage();
-            epi.setExamDocument(examDocument);
-            epi.setDate(DateTime.now().toDateTimeISO().toString());
-            epi.setDownloadUrl(url);
-            epi.setPageIndex(index);
-            epi.setMimeType(getFileType(file));
-            mList.add(epi);
-            index++;
-        }
-        logger.info(mm + "AnswerPageImages to be added: " + mList.size());
-        List<AnswerPageImage>  list = answerPageImageRepository.saveAll(mList);
-        logger.info(mm + "AnswerPageImages added OK: \uD83E\uDD66\uD83E\uDD66 "
-                + list.size() + " .... returning ...");
-
-        return list;
-
-    }
 
     public String getFileType(File file) {
         String fileName = file.getName();
@@ -160,76 +66,31 @@ public class ExamLinkService {
         return extractedFiles;
     }
 
-    public ExamLink saveExamLink(ExamLink examLink) {
-        try {
-            var res = examLinkRepository.save(examLink);
-            logger.info(mm + " ExamLink saved in database: " + examLink.getDocumentTitle()
-                    + " - " + examLink.getTitle() + " link: " + examLink.getLink() + " \uD83D\uDD35\uD83D\uDD35 id: " + res.getId());
-            return res;
-        } catch (Exception e) {
-            logger.severe(mm + "Error saving ExamLink to database: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
+    public List<ExamLink> getSubjectExamLinks(Long subjectId) throws Exception {
+
+        return firestoreService.getSubjectExamLinks(subjectId);
     }
 
-    public List<Object[]> getDistinctDocumentTitles() {
-        return examLinkRepository.findDistinctDocumentTitlesWithId();
-    }
 
-    public List<ExamLink> getSubjectExamLinks(Long subjectId) {
-        return examLinkRepository.findBySubjectId(subjectId);
-    }
-
-    public ExamLink getExamLink(Long examLinkId) throws Exception {
-        Optional<ExamLink> examLinkOptional = examLinkRepository.findById(examLinkId);
-        if (examLinkOptional.isPresent()) {
-            return examLinkOptional.get();
-        } else {
-            throw new Exception("ExamLink not found");
-        }
-
-    }
-
-    public List<Subject> getSubjects() {
+    public List<Subject> getSubjects() throws Exception {
         logger.info(mm + " ... getSubjects ...");
-        return subjectRepository.findAll();
+        return firestoreService.getSubjects();
     }
 
-    public List<GeminiResponseRating> getExamRatings(Long examLinkId) {
-        List<GeminiResponseRating> ratings = new ArrayList<>();
+    public List<GeminiResponseRating> getExamRatings(Long examLinkId) throws Exception {
 
-        List<ExamPageImage> images = examPageImageRepository.findByExamLinkId(examLinkId);
-        for (ExamPageImage image : images) {
-            var list = geminiResponseRatingRepository.findByExamLinkId(image.getId());
-            ratings.addAll(list);
-        }
+        List<GeminiResponseRating> ratings = firestoreService.getResponseRatings(examLinkId);
+
         logger.info(mm + " ... getExamRatings ... found: " + ratings.size());
         return ratings;
     }
-    public List<ExamDocument> getExamDocuments() {
 
-        List<ExamDocument> docs = examDocumentRepository.findAll();
-        logger.info(mm + " ... getExamDocuments ... found: " + docs.size());
-        return docs;
-    }
-    public List<ExamPageImage> addExamImages(ExamPageImage examPageImage, List<File> imageFiles) throws IOException {
-        List<ExamPageImage> list = new ArrayList<>();
-        for (File imageFile : imageFiles) {
-            String url = cloudStorageService.uploadFile(imageFile, examPageImage.getExamLink().getId(),
-                    CloudStorageService.EXAM_FILE);
-            examPageImage.setDownloadUrl(url);
-            ExamPageImage res = examPageImageRepository.save(examPageImage);
-            list.add(res);
-            logger.info(mm + " ... ExamImage added to db ...");
-        }
 
-        return list;
-    }
-
-    public GeminiResponseRating addResponseRating(GeminiResponseRating responseRating) {
+    public List<String> addResponseRating(GeminiResponseRating responseRating) throws Exception {
         logger.info(mm+"adding rating: " + G.toJson(responseRating));
-        var res = geminiResponseRatingRepository.save(responseRating);
+        List<GeminiResponseRating> ratings = new ArrayList<>();
+        ratings.add(responseRating);
+        var res = firestoreService.addGeminiResponseRatings(ratings);
         logger.info(mm + " ... ResponseRating added to db ...");
         return res;
     }

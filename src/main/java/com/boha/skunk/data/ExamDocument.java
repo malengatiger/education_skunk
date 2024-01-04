@@ -1,23 +1,19 @@
 package com.boha.skunk.data;
 
-import jakarta.persistence.*;
 
-@Entity
-@Table(name = "exam_documents")
+
+//@Table(name = "exam_documents")
 
 public class ExamDocument {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "title")
+   //@Column(name = "title")
     String title;
 
-    @Column(name = "link", columnDefinition = "TEXT")
+   //@Column(name = "link", columnDefinition = "TEXT")
     String link;
-
-    @Column(name = "page_image_url", columnDefinition = "TEXT")
-    String pageImageUrl;
 
     public ExamDocument() {
     }
@@ -47,13 +43,8 @@ public class ExamDocument {
         this.link = link;
     }
 
-
-    public String getPageImageUrl() {
-        return pageImageUrl;
-    }
-
-    public void setPageImageUrl(String pageImageUrl) {
-        this.pageImageUrl = pageImageUrl;
+    public void setId(Long id) {
+        this.id = id;
     }
 
 

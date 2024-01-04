@@ -1,9 +1,10 @@
 package com.boha.skunk.controllers;
 
 import com.boha.skunk.data.Subject;
-import com.boha.skunk.data.SubjectRepository;
+import com.boha.skunk.services.SgelaFirestoreService;
 import com.boha.skunk.services.YouTubeService;
 import com.boha.skunk.util.CustomErrorResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,19 +16,16 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 @RestController
+@RequiredArgsConstructor
 public class YouTubeController {
     static final String mm = "\uD83C\uDF38\uD83C\uDF38\uD83C\uDF38\uD83C\uDF38 " +
             "YouTubeController  \uD83C\uDF38";
     static final Logger logger = Logger.getLogger(YouTubeController.class.getSimpleName());
 
     private final YouTubeService youTubeService;
-    private final SubjectRepository subjectRepository;
+    private final SgelaFirestoreService firestoreService;
 
-    @Autowired
-    public YouTubeController(YouTubeService youTubeService, SubjectRepository subjectRepository) {
-        this.youTubeService = youTubeService;
-        this.subjectRepository = subjectRepository;
-    }
+
 
     @GetMapping("/channels")
     public ResponseEntity<Object> searchChannels(@RequestParam("query") String query,
@@ -81,8 +79,7 @@ public class YouTubeController {
         return ResponseEntity.ok().body(youTubeService.searchVideosByTag(maxResults.longValue(), subject, tagType));
     }
 
-    private Subject getSubjectById(Long subjectId) {
-        Optional<Subject> optionalSubject = subjectRepository.findById(subjectId);
-        return optionalSubject.orElse(null);
+    private Subject getSubjectById(Long subjectId) throws Exception {
+        return firestoreService.getSubjectById(subjectId);
     }
 }

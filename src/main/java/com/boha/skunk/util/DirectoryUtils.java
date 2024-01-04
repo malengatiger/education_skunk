@@ -1,10 +1,7 @@
 package com.boha.skunk.util;
 
-import com.boha.skunk.services.DataService;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -14,53 +11,35 @@ public class DirectoryUtils {
             "DirectoryUtils \uD83D\uDC9C";
     static final Logger logger = Logger.getLogger(DirectoryUtils.class.getSimpleName());
 
-    public static void deleteFilesInDirectory() {
-        File directory1 = new File("pdf_page_images");
-        if (directory1.isDirectory()) {
-            File[] files = directory1.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isDirectory()) {
-                        removeFiles(List.of(Objects.requireNonNull(file.listFiles())));
-                        var ok = file.delete();
-                        logger.info(mm + "Directory deleted: " + ok +
-                                " \uD83D\uDD35 file: " + file.getAbsolutePath());// Delete the file
-                    } else {
-                        long lastModifiedTime = file.lastModified();
-                        long currentTime = System.currentTimeMillis();
-                        long timeDifference = currentTime - lastModifiedTime;
-                        long fiveMinutesInMillis = 5 * 60 * 1000L; // 5 minutes in milliseconds
+    public static void deleteFilesInDirectories() {
+        List<String> dirs = new ArrayList<>();
+        dirs.add("answer_page_images");
+        dirs.add("cloudstorage");
+        dirs.add("exam_page_images");
+        dirs.add("pdfs");
 
-                        if (timeDifference > fiveMinutesInMillis) {
+        for (String dir : dirs) {
+            File directory1 = new File(dir);
+            if (directory1.isDirectory()) {
+                File[] files = directory1.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.isDirectory()) {
+                            removeFiles(List.of(Objects.requireNonNull(file.listFiles())));
                             var ok = file.delete();
-                            logger.info(mm + "File deleted: " + ok +
+                            logger.info(mm + "Directory deleted: " + ok +
                                     " \uD83D\uDD35 file: " + file.getAbsolutePath());// Delete the file
-                        }
-                    }
-                }
-            }
-        }
-        //
-        File directory2 = new File("pdfs");
-        if (directory2.isDirectory()) {
-            File[] files = directory2.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isDirectory()) {
-                        removeFiles(List.of(Objects.requireNonNull(file.listFiles())));
-                        var ok = file.delete();
-                        logger.info(mm + "Directory deleted: " + ok +
-                                " \uD83D\uDD35 file: " + file.getAbsolutePath());// Delete the file
-                    } else {
-                        long lastModifiedTime = file.lastModified();
-                        long currentTime = System.currentTimeMillis();
-                        long timeDifference = currentTime - lastModifiedTime;
-                        long fiveMinutesInMillis = 5 * 60 * 1000L; // 5 minutes in milliseconds
+                        } else {
+                            long lastModifiedTime = file.lastModified();
+                            long currentTime = System.currentTimeMillis();
+                            long timeDifference = currentTime - lastModifiedTime;
+                            long fiveMinutesInMillis = 5 * 60 * 1000L; // 5 minutes in milliseconds
 
-                        if (timeDifference > fiveMinutesInMillis) {
-                            var ok = file.delete();
-                            logger.info(mm + "File deleted: " + ok +
-                                    " \uD83D\uDD35 file: " + file.getAbsolutePath());// Delete the file
+                            if (timeDifference > fiveMinutesInMillis) {
+                                var ok = file.delete();
+                                logger.info(mm + "File deleted: " + ok +
+                                        " \uD83D\uDD35 file: " + file.getAbsolutePath());// Delete the file
+                            }
                         }
                     }
                 }
@@ -72,7 +51,7 @@ public class DirectoryUtils {
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    deleteFilesInDirectory(); // Recursively delete files in subdirectories
+                    deleteFilesInDirectories(); // Recursively delete files in subdirectories
                 } else {
                     long lastModifiedTime = file.lastModified();
                     long currentTime = System.currentTimeMillis();

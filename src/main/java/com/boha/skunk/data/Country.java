@@ -1,19 +1,13 @@
 package com.boha.skunk.data;
 
-import jakarta.persistence.*;
 
 import java.util.List;
 
-@Entity()
-@Table(name = "Country",
-        uniqueConstraints = @UniqueConstraint(
-                columnNames = {"name"})
-)
 
 public class Country {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
+    
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+   //@Column(name = "id", nullable = false)
     private Long id;
 
     String name;
@@ -34,16 +28,16 @@ public class Country {
     boolean flag;
 
 
-    @OneToMany(mappedBy = "country")
+    //@Table(mappedBy = "country")
     List<Subscription> subscriptions;
 
-    @OneToMany(mappedBy = "country")
+    //@Table(mappedBy = "country")
     List<State> states;
 
-    @OneToMany(mappedBy = "country")
+    //@Table(mappedBy = "country")
     List<City> cities;
 
-    @OneToMany(mappedBy = "country")
+    //@Table(mappedBy = "country")
     List<Organization> organizations;
 
     public Long getId() {
