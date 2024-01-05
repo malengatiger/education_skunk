@@ -4,6 +4,7 @@ import com.boha.skunk.data.*;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -77,14 +78,14 @@ public class SgelaFirestoreService {
         return results;
     }
 
-    public List<String> addSubjects(List<Subject> subjects) throws ExecutionException, InterruptedException {
-        List<String> results = new ArrayList<>();
-        for (Subject subject : subjects) {
-            subject.setId(subject.getId());
-            String result = addDocument(subject);
-            results.add(result);
-        }
-        return results;
+    public List<String> addSubjects(List<Object> subjects) throws ExecutionException, InterruptedException {
+        //        for (Subject subject : subjects) {
+//            subject.setId(subject.getId());
+//            String result = addDocument(subject);
+//            results.add(result);
+//        }
+
+        return batchWrite(subjects);
     }
 
     public List<String> addExamLinks(List<ExamLink> examLinks) throws ExecutionException, InterruptedException {
@@ -136,7 +137,42 @@ public class SgelaFirestoreService {
         return null;
     }
 
+    public  List<String> batchWrite(List<Object> data) throws ExecutionException, InterruptedException {
+        String className = data.get(0).getClass().getSimpleName();
+        List<String> list = new ArrayList<>();
+        WriteBatch batch = firestore.batch();
+        CollectionReference collection = firestore.collection(className);
+
+        for (Object item : data) {
+            DocumentReference document = collection.document();
+            batch.set(document, item);
+            list.add(document.getId());
+        }
+
+        batch.commit().get();
+        logger.info(mm+" Firestore batchWrite complete!. rows added: " + data.size());
+
+        return list;
+    }
+    public List<String> writeMultipleRows(List<Class<T>> data) {
+        logger.info(mm+" Firestore transaction starting. rows to add: " + data.size());
+        List<String> documentIds = new ArrayList<>();
+        String className = data.get(0).getSimpleName();
+        firestore.runTransaction(transaction -> {
+            CollectionReference collection = firestore.collection(className);
+            for (Object item : data) {
+                DocumentReference document = collection.document();
+                transaction.set(document, item);
+                documentIds.add(document.getId());
+            }
+            logger.info(mm+" Firestore transaction complete. rows added: " + data.size());
+            return null;
+        });
+
+        return documentIds;
+    }
     public <T> List<T> getAllDocuments(Class<T> valueType) throws ExecutionException, InterruptedException {
+
 
         CollectionReference collectionReference = firestore.collection(valueType.getSimpleName());
         ApiFuture<QuerySnapshot> result = collectionReference.get();

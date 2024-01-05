@@ -23,9 +23,10 @@
 hs_err_pid*
 replay_pid*
 
-.idea/
+.idea/*
 .env*
 answer_page_images/
 cloudstorage/
 exam_page_images/
 pdfs/
+/.idea/

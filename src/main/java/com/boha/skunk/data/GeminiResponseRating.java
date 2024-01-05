@@ -14,6 +14,7 @@ public class GeminiResponseRating {
     Long examLinkId;
    //@Column(name = "rating")
     int rating;
+    int tokensUsed;
    //@Column(name = "date")
     String date;
    //@Column(name = "response_text", columnDefinition = "TEXT")
@@ -36,6 +37,13 @@ public class GeminiResponseRating {
     }
 
 
+    public int getTokensUsed() {
+        return tokensUsed;
+    }
+
+    public void setTokensUsed(int tokensUsed) {
+        this.tokensUsed = tokensUsed;
+    }
 
     public String getPrompt() {
         return prompt;
