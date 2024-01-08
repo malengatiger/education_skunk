@@ -86,7 +86,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
         String m = httpServletRequest.getHeader("Authorization");
         if (m == null) {
-            sendError(httpServletResponse, "Authentication token missing");
+            sendError(httpServletResponse, "Authentication token missing or invalid or expired");
             return;
         }
         String token = m.substring(7);

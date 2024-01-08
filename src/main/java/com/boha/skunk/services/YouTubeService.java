@@ -113,7 +113,6 @@ public class YouTubeService {
         searchRequest.setType(types);
         searchRequest.setMaxResults(maxResults);
         List<YouTubeData> youTubeDataList = new ArrayList<>();
-        List<YouTubeData> duplicates = new ArrayList<>();
 
         SearchListResponse searchResponse = searchRequest.execute();
         for (SearchResult searchResult : searchResponse.getItems()) {
@@ -135,10 +134,9 @@ public class YouTubeService {
             YouTubeData youTubeData = new YouTubeData(channelId, channelTitle, videoId,
                     playlistId, title, description, high, med, def, subject);
 
-
+            youTubeDataList.add(youTubeData);
 
         }
-        youTubeDataList.addAll(duplicates);
         logger.info(mm + "\n");
         logger.info(mm + "Total Search responses: \uD83C\uDF4E\uD83C\uDF4E\uD83C\uDF4E "
                 + youTubeDataList.size() + "\n\n");

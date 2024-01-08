@@ -7,7 +7,6 @@ public class Pricing {
     //@GeneratedValue(strategy = GenerationType.AUTO)
    //@Column(name = "id", nullable = false)
     private Long id;
-
     //
     //(name = "country_id")
     private Country country;

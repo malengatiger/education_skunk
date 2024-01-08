@@ -30,7 +30,14 @@ public class ExamLinkController {
     private final ExamLinkService examLinkService;
     private final SgelaFirestoreService sgelaFirestoreService;
 
-    @GetMapping("/getSubjects")
+    @GetMapping("/")
+    public ResponseEntity<String> hello(){
+        logger.info(mm + "say hello! ..... ");
+        return ResponseEntity.ok(
+                "<h1>Sgela AI Backend</h1><p>The SgelaAI Backend to manage data</p>");
+    }
+
+        @GetMapping("/getSubjects")
     public ResponseEntity<List<Subject>> getSubjects() throws Exception{
         logger.info(mm + "find all subjects ..... ");
 
