@@ -138,7 +138,7 @@ public class YouTubeService {
 
         }
         logger.info(mm + "\n");
-        logger.info(mm + "Total Search responses: \uD83C\uDF4E\uD83C\uDF4E\uD83C\uDF4E "
+        logger.info(mm + " Total Search responses: \uD83C\uDF4E\uD83C\uDF4E\uD83C\uDF4E "
                 + youTubeDataList.size() + "\n\n");
 
         return youTubeDataList;
