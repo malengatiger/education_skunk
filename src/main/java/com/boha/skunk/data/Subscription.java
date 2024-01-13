@@ -4,27 +4,32 @@ package com.boha.skunk.data;
 
 //@Table(name = "subscriptions")
 public class Subscription {
-    
-    //@GeneratedValue(strategy = GenerationType.AUTO)
-   //@Column(name = "id", nullable = false)
-    private Long id;
 
-    //
-    //(name = "organization_id")
-    private Organization organization;
-    //
-    //(name = "pricing_id")
+    private Long id;
+    private Long organizationId;
+    private String organizationName;
     private Pricing pricing;
     private String date;
-    private int subscriptionType;
+    private int subscriptionType; //see Constants
     //
     //(name = "user_id")
     private User user;
-
+    private int numberOfUsers;
     //
     //(name = "country_id")
-    private Country country;
+    private Long countryId;
     private boolean activeFlag;
+
+    public void incrementUsers() {
+        numberOfUsers++;
+    }
+    public int getNumberOfUsers() {
+        return numberOfUsers;
+    }
+
+    public void setNumberOfUsers(int numberOfUsers) {
+        this.numberOfUsers = numberOfUsers;
+    }
 
     public Long getId() {
         return id;
@@ -42,20 +47,28 @@ public class Subscription {
         this.pricing = pricing;
     }
 
-    public Country getCountry() {
-        return country;
+    public Long getOrganizationId() {
+        return organizationId;
     }
 
-    public void setCountry(Country country) {
-        this.country = country;
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
     }
 
-    public Organization getOrganization() {
-        return organization;
+    public String getOrganizationName() {
+        return organizationName;
     }
 
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
+    }
+
+    public Long getCountryId() {
+        return countryId;
+    }
+
+    public void setCountryId(Long countryId) {
+        this.countryId = countryId;
     }
 
     public String getDate() {

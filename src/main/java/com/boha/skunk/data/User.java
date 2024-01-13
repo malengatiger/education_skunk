@@ -1,43 +1,47 @@
 package com.boha.skunk.data;
 
 
-
-import java.util.List;
-
 public class User {
     
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Long organizationId;
 
-    //
-    //(name = "organization_id")
-    private Organization organization;
+    Long subscriptionId;
 
-    //@Table(mappedBy = "user")
-    List<Subscription> subscriptions;
-
-   //@Column(name = "first_name")
     private String firstName;
+    private String subscriptionDate;
 
-   //@Column(name = "last_name")
     private String lastName;
 
-   //@Column(name = "email")
     private String email;
 
-   //@Column(name = "cellphone")
     private String cellphone;
 
-   //@Column(name = "firebase_user_id")
     private String firebaseUserId;
 
-   //@Column(name = "active_flag")
+    private String password;
     private boolean activeFlag;
     public User() {
     }
 
     public Long getId() {
         return id;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getSubscriptionDate() {
+        return subscriptionDate;
+    }
+
+    public void setSubscriptionDate(String subscriptionDate) {
+        this.subscriptionDate = subscriptionDate;
     }
 
     public String getFirebaseUserId() {
@@ -56,12 +60,20 @@ public class User {
         this.activeFlag = activeFlag;
     }
 
-    public Organization getOrganization() {
-        return organization;
+    public Long getOrganizationId() {
+        return organizationId;
     }
 
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
+    }
+
+    public Long getSubscriptionId() {
+        return subscriptionId;
+    }
+
+    public void setSubscriptionId(Long subscriptionId) {
+        this.subscriptionId = subscriptionId;
     }
 
     public String getFirstName() {

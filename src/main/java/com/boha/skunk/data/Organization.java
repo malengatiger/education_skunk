@@ -1,49 +1,59 @@
 package com.boha.skunk.data;
 
-
-import java.util.List;
-
-
-//@Table(name = "Organization")
-
 public class Organization {
-    
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+      Long id;
 
-    //@Table(mappedBy = "organization")
-    List<Subscription> subscriptions;
-
-    //@Table(mappedBy = "organization")
-    List<User> users;
-
-    //
-    //(name = "country_id")
+    User adminUser;
     private Country country;
-
-    //
-    //(name = "city_id")
     private City city;
-
-   //@Column(name = "name")
     String name;
 
-   //@Column(name = "email", columnDefinition = "TEXT")
     String email;
-   //@Column(name = "cellphone")
     String cellphone;
+
+    String logoUrl;
+    String imageUrl;
+    String date;
+    String tagLine;
+
 
     public Organization() {
     }
 
-    public Organization(String name, String email, String cellphone) {
-        this.name = name;
-        this.email = email;
-        this.cellphone = cellphone;
-    }
-
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getTagLine() {
+        return tagLine;
+    }
+
+    public void setTagLine(String tagLine) {
+        this.tagLine = tagLine;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
+    public void setLogoUrl(String logoUrl) {
+        this.logoUrl = logoUrl;
     }
 
     public City getCity() {
@@ -54,20 +64,12 @@ public class Organization {
         this.city = city;
     }
 
-    public List<Subscription> getSubscriptions() {
-        return subscriptions;
+    public User getAdminUser() {
+        return adminUser;
     }
 
-    public void setSubscriptions(List<Subscription> subscriptions) {
-        this.subscriptions = subscriptions;
-    }
-
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
+    public void setAdminUser(User adminUser) {
+        this.adminUser = adminUser;
     }
 
     public Long getId() {

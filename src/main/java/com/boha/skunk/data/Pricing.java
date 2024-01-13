@@ -9,7 +9,7 @@ public class Pricing {
     private Long id;
     //
     //(name = "country_id")
-    private Country country;
+    private Long countryId;
     private String date;
     private String currency;
     private double monthlyPrice;
@@ -31,12 +31,16 @@ public class Pricing {
         this.currency = currency;
     }
 
-    public Country getCountry() {
-        return country;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setCountry(Country country) {
-        this.country = country;
+    public Long getCountryId() {
+        return countryId;
+    }
+
+    public void setCountryId(Long countryId) {
+        this.countryId = countryId;
     }
 
     public String getDate() {

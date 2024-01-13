@@ -3,66 +3,95 @@ package com.boha.skunk.controllers;
 import com.boha.skunk.data.Pricing;
 import com.boha.skunk.data.Subscription;
 import com.boha.skunk.services.SubscriptionService;
-import com.boha.skunk.util.CustomErrorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/subs")
 @RequiredArgsConstructor
 public class SubscriptionController {
-    static final String mm = " \uD83C\uDF4E \uD83C\uDF4E \uD83C\uDF4E " +
-            "SubscriptionController  \uD83C\uDF4E";
-    static final Logger logger = Logger.getLogger(SubscriptionController.class.getSimpleName());
 
     private final SubscriptionService subscriptionService;
-//
-//    @GetMapping("/getSubscriptions")
-//    public ResponseEntity<List<Subscription>> getSubscriptions() throws Exception {
-//        List<Subscription> subscriptions = subscriptionService.getSubscriptions();
-//        return new ResponseEntity<>(subscriptions, HttpStatus.OK);
-//    }
-//
-//    @PostMapping("/addSubscription")
-//    public ResponseEntity<Object> addSubscription(@RequestBody Subscription subscription) throws Exception {
-//        try {
-//            Subscription sub = subscriptionService.addSubscription(subscription);
-//            return new ResponseEntity<>(sub, HttpStatus.OK);
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(new CustomErrorResponse(
-//                    400, e.getMessage(), new Date().toString()));
-//        }
-//    }
-//
-//    @PostMapping("/addPricing")
-//    public ResponseEntity<Object> addPricing(@RequestBody Pricing pricing) {
-//        try {
-//            Pricing addedPricing = subscriptionService.addPricing(pricing);
-//            return new ResponseEntity<>(addedPricing, HttpStatus.OK);
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(new CustomErrorResponse(
-//                    400, e.getMessage(), new Date().toString()));
-//        }
-//    }
-//
-//    @GetMapping("/getOrganizationSubscriptions")
-//    public ResponseEntity<List<Subscription>> getOrganizationSubscriptions(
-//            @RequestParam Long organizationId) throws Exception {
-//        List<Subscription> subscriptions = subscriptionService.getOrganizationSubscriptions(organizationId);
-//        return new ResponseEntity<>(subscriptions, HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/getPricing")
-//    public ResponseEntity<List<Pricing>> getPricing() throws Exception {
-//        List<Pricing> pricing = subscriptionService
-//                .getPricing();
-//        return new ResponseEntity<>(pricing, HttpStatus.OK);
-//    }
 
+    @PostMapping("/addPricing")
+    public ResponseEntity<String> addPricing(@RequestBody Pricing pricing) {
+        try {
+            String result = subscriptionService.addPricing(pricing);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getPricings")
+    public ResponseEntity<List<Pricing>> getPricings(@RequestParam Long countryId) {
+        try {
+            List<Pricing> pricings = subscriptionService.getPricings(countryId);
+            return ResponseEntity.ok(pricings);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PostMapping("/addSubscription")
+    public ResponseEntity<String> addSubscription(@RequestBody Subscription subscription) {
+        try {
+            String result = subscriptionService.addSubscription(subscription);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getSubscriptions")
+    public ResponseEntity<List<Subscription>> getSubscriptions(@RequestParam Long organizationId) {
+        try {
+            List<Subscription> subscriptions = subscriptionService.getSubscriptions(organizationId);
+            return ResponseEntity.ok(subscriptions);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/updateSubscription")
+    public ResponseEntity<Integer> updateSubscription(@RequestParam Long organizationId,
+                                                      @RequestParam boolean isActive) {
+        try {
+            int result = subscriptionService.updateSubscription(organizationId, isActive);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/addUserToSubscription")
+    public ResponseEntity<Subscription> addUserToSubscription(@RequestParam Long userId,
+                                                              @RequestParam Long subscriptionId) {
+        try {
+            Subscription result = subscriptionService.addUserToSubscription(userId, subscriptionId);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/checkOrganizationSubscription")
+    public ResponseEntity<Boolean> checkOrganizationSubscription(@RequestParam Long organizationId) {
+        try {
+            boolean result = subscriptionService.checkOrganizationSubscription(organizationId);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/updateUserSubscription")
+    public ResponseEntity<Integer> updateUserSubscription(@RequestParam Long userId, @RequestParam Long subscriptionId) {
+        int result = subscriptionService.updateUserSubscription(userId, subscriptionId);
+        return ResponseEntity.ok(result);
+    }
 }

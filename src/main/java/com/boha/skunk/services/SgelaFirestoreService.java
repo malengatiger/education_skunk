@@ -4,13 +4,10 @@ import com.boha.skunk.data.*;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
@@ -22,6 +19,7 @@ public class SgelaFirestoreService {
 
     private final Firestore firestore;
     private final FirebaseService firebaseService;
+
     public SgelaFirestoreService(FirebaseService firebaseService) {
         this.firebaseService = firebaseService;
         this.firestore = FirestoreClient.getFirestore();
@@ -117,8 +115,18 @@ public class SgelaFirestoreService {
 
     public void updateDocument(String collectionName, String documentId, Map<String, Object> data) throws ExecutionException, InterruptedException {
         DocumentReference documentReference = firestore.collection(collectionName).document(documentId);
-        ApiFuture<WriteResult> result = documentReference.update(data);
-        result.get();
+        documentReference.update(data);
+    }
+
+    public void updateDocument(String collectionName,
+                               Long id, Map<String, Object> data) throws ExecutionException, InterruptedException {
+        Query query = firestore.collection(collectionName).whereEqualTo("id", id);
+        ApiFuture<QuerySnapshot> m = query.get();
+        QuerySnapshot snap = m.get();
+        for (QueryDocumentSnapshot document : snap.getDocuments()) {
+            document.getReference().update(data);
+        }
+
     }
 
     public void deleteDocument(String collectionName, String documentId) throws ExecutionException, InterruptedException {
@@ -126,6 +134,7 @@ public class SgelaFirestoreService {
         ApiFuture<WriteResult> result = documentReference.delete();
         result.get();
     }
+
 
     public <T> T getDocument(String collectionName, String documentId, Class<T> valueType) throws ExecutionException, InterruptedException {
         DocumentReference documentReference = firestore.collection(collectionName).document(documentId);
@@ -137,7 +146,104 @@ public class SgelaFirestoreService {
         return null;
     }
 
-    public  List<String> batchWrite(List<Object> data) throws ExecutionException, InterruptedException {
+    public <T> T getDocument(String collectionName, Long id, Class<T> valueType) throws Exception {
+        Query query = firestore.collection(collectionName).whereEqualTo("id", id);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        QuerySnapshot snapshot = querySnapshot.get();
+
+        List<T> list = new ArrayList<>();
+        for (QueryDocumentSnapshot document : snapshot) {
+            var obj = document.toObject(valueType);
+            list.add(obj);
+        }
+
+        if (list.isEmpty()) {
+            return null;
+        }
+        return list.get(0);
+    }
+
+    public void updateDocumentsByProperty(String collectionName,
+                                          String propertyName,
+                                          Object propertyValue, Map<String, Object> updateData) throws Exception {
+        CollectionReference collectionRef = firestore.collection(collectionName);
+        Query query = collectionRef.whereEqualTo(propertyName, propertyValue);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        QuerySnapshot snapshot = querySnapshot.get();
+
+        for (QueryDocumentSnapshot document : snapshot) {
+            DocumentReference documentRef = collectionRef.document(document.getId());
+            ApiFuture<WriteResult> updateFuture = documentRef.update(updateData);
+            updateFuture.get(); // Wait for the update to complete
+        }
+    }
+
+    public int updateSubscription(
+            Long organizationId,
+            boolean isActive) throws Exception {
+        CollectionReference collectionRef = firestore.collection(Subscription.class.getSimpleName());
+        Query query = collectionRef.whereEqualTo("organizationId", organizationId);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        QuerySnapshot snapshot = querySnapshot.get();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("activeFlag", isActive);
+        for (QueryDocumentSnapshot document : snapshot) {
+            DocumentReference documentRef = collectionRef.document(document.getId());
+            ApiFuture<WriteResult> updateFuture = documentRef.update(map);
+            updateFuture.get(); // Wait for the update to complete
+        }
+        return 0;
+    }
+
+    public int addUserToSubscription(Long userId, Long subscriptionId) throws Exception {
+        CollectionReference collectionRef = firestore.collection(User.class.getSimpleName());
+        Query query = collectionRef.whereEqualTo("userId", userId);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        QuerySnapshot snapshot = querySnapshot.get();
+
+        for (QueryDocumentSnapshot document : snapshot) {
+            Map<String, Object> map = new HashMap<>();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            // Format the date to UTC string
+            String utcDate = sdf.format(new Date());
+            map.put("subscriptionId", subscriptionId);
+            map.put("subscriptionDate", utcDate);
+            DocumentReference documentRef = collectionRef.document(document.getId());
+            ApiFuture<WriteResult> updateFuture = documentRef.update(map);
+            updateFuture.get();
+            int ok = increaseSubscriptionUsers(subscriptionId); // Wait for the update to complete
+            if (ok == 0) {
+                logger.info(mm + " user enrolled in subscription");
+            } else {
+                return 9;
+            }
+        }
+        return 0;
+    }
+
+    private int increaseSubscriptionUsers(Long subscriptionId) throws Exception {
+        CollectionReference collectionRef = firestore.collection(Subscription.class.getSimpleName());
+        Query query = collectionRef.whereEqualTo("subscriptionId", subscriptionId);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+        QuerySnapshot snapshot = querySnapshot.get();
+
+        for (QueryDocumentSnapshot document : snapshot) {
+            Object numberOfUsersObj = document.get("numberOfUsers");
+            if (numberOfUsersObj != null) {
+                int numberOfUsers = ((Integer) numberOfUsersObj) + 1;
+                Map<String, Object> map = new HashMap<>();
+                map.put("numberOfUsers", numberOfUsers);
+                DocumentReference documentRef = collectionRef.document(document.getId());
+                ApiFuture<WriteResult> updateFuture = documentRef.update(map);
+                updateFuture.get(); // Wait for the update to complete
+            }
+        }
+        return 0;
+    }
+
+    public List<String> batchWrite(List<Object> data) throws ExecutionException, InterruptedException {
         String className = data.get(0).getClass().getSimpleName();
         List<String> list = new ArrayList<>();
         WriteBatch batch = firestore.batch();
@@ -150,27 +256,11 @@ public class SgelaFirestoreService {
         }
 
         batch.commit().get();
-        logger.info(mm+" Firestore batchWrite complete!. rows added: " + data.size());
+        logger.info(mm + " Firestore batchWrite complete!. rows added: " + data.size());
 
         return list;
     }
-    public List<String> writeMultipleRows(List<Class<T>> data) {
-        logger.info(mm+" Firestore transaction starting. rows to add: " + data.size());
-        List<String> documentIds = new ArrayList<>();
-        String className = data.get(0).getSimpleName();
-        firestore.runTransaction(transaction -> {
-            CollectionReference collection = firestore.collection(className);
-            for (Object item : data) {
-                DocumentReference document = collection.document();
-                transaction.set(document, item);
-                documentIds.add(document.getId());
-            }
-            logger.info(mm+" Firestore transaction complete. rows added: " + data.size());
-            return null;
-        });
 
-        return documentIds;
-    }
     public <T> List<T> getAllDocuments(Class<T> valueType) throws ExecutionException, InterruptedException {
 
 
@@ -192,9 +282,10 @@ public class SgelaFirestoreService {
     public List<Subject> getSubjects() throws ExecutionException, InterruptedException {
         return getAllDocuments(Subject.class);
     }
+
     public Subject getSubjectById(Long subjectId) throws Exception {
         var list = getDocumentsByLongProperty(Subject.class.getSimpleName(),
-                "id", subjectId);
+                "id", subjectId, null);
         if (!list.isEmpty()) {
             return list.get(0).toObject(Subject.class);
         }
@@ -225,24 +316,122 @@ public class SgelaFirestoreService {
     public List<GeminiResponseRating> getResponseRatings(Long examLinkId) throws ExecutionException, InterruptedException {
         List<QueryDocumentSnapshot> queryDocumentSnapshotList =
                 getDocumentsByLongProperty(GeminiResponseRating.class.getSimpleName(),
-                        "examLinkId", examLinkId);
-        List<GeminiResponseRating> subjects = new ArrayList<>();
+                        "examLinkId", examLinkId, "date");
+        List<GeminiResponseRating> geminiResponseRatings = new ArrayList<>();
         for (QueryDocumentSnapshot snapshot : queryDocumentSnapshotList) {
             GeminiResponseRating s = snapshot.toObject(GeminiResponseRating.class);
-            subjects.add(s);
+            geminiResponseRatings.add(s);
         }
 
-        return subjects;
+        return geminiResponseRatings;
+    }
+
+    public List<Subscription> getSubscriptions(Long organizationId) throws ExecutionException, InterruptedException {
+        List<QueryDocumentSnapshot> queryDocumentSnapshotList =
+                getDocumentsByLongProperty(Subscription.class.getSimpleName(),
+                        "organizationId", organizationId, "date");
+        List<Subscription> subscriptions = new ArrayList<>();
+        for (QueryDocumentSnapshot snapshot : queryDocumentSnapshotList) {
+            Subscription s = snapshot.toObject(Subscription.class);
+            subscriptions.add(s);
+        }
+
+        return subscriptions;
+    }
+
+    public List<User> getOrganizationUsers(Long organizationId) throws ExecutionException, InterruptedException {
+        List<QueryDocumentSnapshot> queryDocumentSnapshotList =
+                getDocumentsByLongProperty(Subscription.class.getSimpleName(),
+                        "organizationId", organizationId, "date");
+        List<User> users = new ArrayList<>();
+        for (QueryDocumentSnapshot snapshot : queryDocumentSnapshotList) {
+            User s = snapshot.toObject(User.class);
+            users.add(s);
+        }
+
+        return users;
+    }
+    public List<Organization> getOrganizations() throws ExecutionException, InterruptedException {
+        CollectionReference collectionReference = firestore.collection(Organization.class.getSimpleName());
+        var queryDocumentSnapshotList = collectionReference.get().get();
+
+        List<Organization> organizations = new ArrayList<>();
+        for (QueryDocumentSnapshot snapshot : queryDocumentSnapshotList) {
+            Organization s = snapshot.toObject(Organization.class);
+            organizations.add(s);
+        }
+
+        return organizations;
+    }
+
+
+    public Subscription getSubscription(Long subscriptionId) throws ExecutionException, InterruptedException {
+        List<QueryDocumentSnapshot> queryDocumentSnapshotList =
+                getDocumentsByLongProperty(Subscription.class.getSimpleName(),
+                        "id", subscriptionId, null);
+        List<Subscription> subscriptions = new ArrayList<>();
+        for (QueryDocumentSnapshot snapshot : queryDocumentSnapshotList) {
+            Subscription s = snapshot.toObject(Subscription.class);
+            subscriptions.add(s);
+        }
+
+        if (subscriptions.isEmpty()) {
+            return null;
+        }
+        return subscriptions.get(0);
+    }
+
+    public Organization getOrganization(Long organizationId) throws ExecutionException, InterruptedException {
+        List<QueryDocumentSnapshot> queryDocumentSnapshotList =
+                getDocumentsByLongProperty(Organization.class.getSimpleName(),
+                        "id", organizationId, null);
+        List<Organization> organizations = new ArrayList<>();
+        for (QueryDocumentSnapshot snapshot : queryDocumentSnapshotList) {
+            Organization s = snapshot.toObject(Organization.class);
+            organizations.add(s);
+        }
+
+        if (organizations.isEmpty()) {
+            return null;
+        }
+        return organizations.get(0);
+    }
+
+    public List<Pricing> getPricings(Long countryId) throws ExecutionException, InterruptedException {
+        List<QueryDocumentSnapshot> queryDocumentSnapshotList =
+                getDocumentsByLongProperty(Subscription.class.getSimpleName(),
+                        "countryId", countryId, "date");
+        List<Pricing> pricings = new ArrayList<>();
+        for (QueryDocumentSnapshot snapshot : queryDocumentSnapshotList) {
+            Pricing s = snapshot.toObject(Pricing.class);
+            pricings.add(s);
+        }
+
+        return pricings;
+    }
+
+    public void updateDocumentProperty(
+            String collectionName,
+            String documentId,
+            String propertyName,
+            Object propertyValue) throws Exception {
+        DocumentReference documentRef = firestore.collection(collectionName).document(documentId);
+        ApiFuture<WriteResult> updateFuture = documentRef.update(propertyName, propertyValue);
+        updateFuture.get(); // Wait for the update to complete
     }
 
     public List<QueryDocumentSnapshot> getDocumentsByLongProperty(String collectionName,
                                                                   String propertyName,
-                                                                  Long propertyValue) throws ExecutionException, InterruptedException {
+                                                                  Long propertyValue,
+                                                                  String orderBy) throws ExecutionException, InterruptedException {
         logger.info(mm + "getDocumentsByLongProperty: propertyName: "
                 + propertyName + " propertyValue: " + propertyValue
                 + " collectionName: " + collectionName);
         CollectionReference collectionReference = firestore.collection(collectionName);
         Query query = collectionReference.whereEqualTo(propertyName, propertyValue);
+        if (orderBy != null) {
+            query.orderBy(orderBy);
+        }
         ApiFuture<QuerySnapshot> querySnapshot = query.get();
         QuerySnapshot snapshot = querySnapshot.get();
         return snapshot.getDocuments();
