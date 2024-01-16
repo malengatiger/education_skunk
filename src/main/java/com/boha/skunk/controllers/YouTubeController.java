@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 //@RequiredArgsConstructor
 public class YouTubeController {
     static final String mm = "\uD83C\uDF38\uD83C\uDF38\uD83C\uDF38\uD83C\uDF38 " +
-            "YouTubeController  \uD83C\uDF38";
+            " YouTubeController  \uD83C\uDF38";
     static final Logger logger = Logger.getLogger(YouTubeController.class.getSimpleName());
 
     private final YouTubeService youTubeService;
@@ -60,7 +60,7 @@ public class YouTubeController {
         Subject subject = getSubjectById(subjectId);
         if (subject == null) {
             return ResponseEntity.badRequest().body(new CustomErrorResponse(
-                    400, "Subject not found", new Date().toString()));
+                    400, "Subject has not been found", new Date().toString()));
         }
         var list = youTubeService.searchVideos(query, maxResults, subject);
         return ResponseEntity.ok().body(list);
