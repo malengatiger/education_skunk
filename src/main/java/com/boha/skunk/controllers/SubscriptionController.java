@@ -3,7 +3,6 @@ package com.boha.skunk.controllers;
 import com.boha.skunk.data.Pricing;
 import com.boha.skunk.data.Subscription;
 import com.boha.skunk.services.SubscriptionService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +11,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/subs")
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
+
+    public SubscriptionController(SubscriptionService subscriptionService) {
+        this.subscriptionService = subscriptionService;
+    }
 
     @PostMapping("/addPricing")
     public ResponseEntity<String> addPricing(@RequestBody Pricing pricing) {

@@ -1,13 +1,11 @@
 package com.boha.skunk.controllers;
 
-import com.boha.skunk.data.Organization;
 import com.boha.skunk.data.User;
 import com.boha.skunk.services.UserBatchService;
 import com.boha.skunk.services.UserService;
 import com.boha.skunk.services.WebCrawlerService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +15,7 @@ import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/users")
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
     private final UserBatchService userBatchService;
@@ -26,6 +24,12 @@ public class UserController {
             "UserController \uD83D\uDD35";
     static final Logger logger = Logger.getLogger(UserController.class.getSimpleName());
     static final Gson G = new GsonBuilder().setPrettyPrinting().create();
+
+    public UserController(UserService userService, UserBatchService userBatchService, WebCrawlerService webCrawlerService) {
+        this.userService = userService;
+        this.userBatchService = userBatchService;
+        this.webCrawlerService = webCrawlerService;
+    }
 
     @PostMapping("/registerUser")
     public ResponseEntity<Object> registerUser(@RequestBody User user) {

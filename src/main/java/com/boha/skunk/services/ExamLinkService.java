@@ -3,21 +3,18 @@ package com.boha.skunk.services;
 import com.boha.skunk.data.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import lombok.RequiredArgsConstructor;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class ExamLinkService {
 
 
@@ -30,6 +27,11 @@ public class ExamLinkService {
     private String educUrl;
 
     private final SgelaFirestoreService firestoreService;
+
+    public ExamLinkService(CloudStorageService cloudStorageService, SgelaFirestoreService firestoreService) {
+        this.cloudStorageService = cloudStorageService;
+        this.firestoreService = firestoreService;
+    }
 
 
     public String getFileType(File file) {

@@ -4,19 +4,16 @@ import com.boha.skunk.data.Subject;
 import com.boha.skunk.services.SgelaFirestoreService;
 import com.boha.skunk.services.YouTubeService;
 import com.boha.skunk.util.CustomErrorResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
-import java.util.Optional;
 import java.util.logging.Logger;
 
 @RestController
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class YouTubeController {
     static final String mm = "\uD83C\uDF38\uD83C\uDF38\uD83C\uDF38\uD83C\uDF38 " +
             "YouTubeController  \uD83C\uDF38";
@@ -25,6 +22,10 @@ public class YouTubeController {
     private final YouTubeService youTubeService;
     private final SgelaFirestoreService firestoreService;
 
+    public YouTubeController(YouTubeService youTubeService, SgelaFirestoreService firestoreService) {
+        this.youTubeService = youTubeService;
+        this.firestoreService = firestoreService;
+    }
 
 
     @GetMapping("/channels")

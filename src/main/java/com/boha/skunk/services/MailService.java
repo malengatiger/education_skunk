@@ -5,14 +5,13 @@ import com.boha.skunk.util.E;
 import jakarta.mail.Message;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 
 @Service
 public class MailService {
@@ -22,6 +21,10 @@ public class MailService {
 
     @Value("${email}")
     private String email;
+
+    public MailService(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
     public void sendHtmlEmail(String to,
                               String message,

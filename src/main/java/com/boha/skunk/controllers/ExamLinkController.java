@@ -3,8 +3,6 @@ package com.boha.skunk.controllers;
 import com.boha.skunk.data.*;
 import com.boha.skunk.services.ExamLinkService;
 import com.boha.skunk.services.SgelaFirestoreService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +19,7 @@ import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/links")
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class ExamLinkController {
     static final String mm = " \uD83C\uDF4E \uD83C\uDF4E \uD83C\uDF4E " +
             "ExamLinkController  \uD83C\uDF4E";
@@ -29,6 +27,11 @@ public class ExamLinkController {
 
     private final ExamLinkService examLinkService;
     private final SgelaFirestoreService sgelaFirestoreService;
+
+    public ExamLinkController(ExamLinkService examLinkService, SgelaFirestoreService sgelaFirestoreService) {
+        this.examLinkService = examLinkService;
+        this.sgelaFirestoreService = sgelaFirestoreService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<String> hello(){

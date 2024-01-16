@@ -1,6 +1,5 @@
 package com.boha.skunk.services;
 
-import com.boha.skunk.controllers.OrganizationController;
 import com.boha.skunk.data.User;
 import com.boha.skunk.util.Util;
 import com.google.api.core.ApiFuture;
@@ -8,20 +7,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserRecord;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import lombok.RequiredArgsConstructor;
-import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class UserService {
 
     static final String mm = "\uD83C\uDF0D\uD83C\uDF0D\uD83C\uDF0D\uD83C\uDF0D " +
@@ -30,7 +23,12 @@ public class UserService {
     static final Gson G = new GsonBuilder().setPrettyPrinting().create();
      final MailService mailService;
         final SgelaFirestoreService sgelaFirestoreService;
-   
+
+    public UserService(MailService mailService, SgelaFirestoreService sgelaFirestoreService) {
+        this.mailService = mailService;
+        this.sgelaFirestoreService = sgelaFirestoreService;
+    }
+
     public User createUser(User user) throws Exception {
         logger.info("\uD83E\uDDE1\uD83E\uDDE1 create user : " + G.toJson(user));
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();

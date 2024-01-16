@@ -1,28 +1,23 @@
 package com.boha.skunk.services;
 
 
-import com.boha.skunk.data.Organization;
-import com.boha.skunk.data.User;
-import com.boha.skunk.util.FileToUsers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @Service
 public class UserBatchService {
     private static final Gson G = new GsonBuilder().setPrettyPrinting().create();
     private static final Logger LOGGER = LoggerFactory.getLogger(UserBatchService.class);
 
     private final UserService userService;
+
+    public UserBatchService(UserService userService) {
+        this.userService = userService;
+    }
 //
 //    public  List<User> handleUsersFromJSON(File file, Long organizationId
 //                                           ) throws Exception {

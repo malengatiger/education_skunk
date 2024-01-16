@@ -3,16 +3,19 @@ package com.boha.skunk.services;
 
 import com.boha.skunk.data.Pricing;
 import com.boha.skunk.data.Subscription;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class SubscriptionService {
 
     private final SgelaFirestoreService sgelaFirestoreService;
+
+    public SubscriptionService(SgelaFirestoreService sgelaFirestoreService) {
+        this.sgelaFirestoreService = sgelaFirestoreService;
+    }
 
     public String addPricing(Pricing pricing) throws Exception {
         return sgelaFirestoreService.addDocument(pricing);

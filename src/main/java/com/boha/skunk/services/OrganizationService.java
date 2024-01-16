@@ -4,23 +4,28 @@ import com.boha.skunk.data.Organization;
 import com.boha.skunk.util.Util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.logging.Logger;
 
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class OrganizationService {
     static final String mm = "\uD83D\uDD35\uD83D\uDD35\uD83D\uDD35\uD83D\uDD35 " +
-            "OrganizationService \uD83D\uDC9C";
+            " OrganizationService \uD83D\uDC9C";
     static final Gson G = new GsonBuilder().setPrettyPrinting().create();
     static final Logger logger = Logger.getLogger(OrganizationService.class.getSimpleName());
     private final SgelaFirestoreService sgelaFirestoreService;
 
     private final MailService mailService;
     private final UserService userService;
+
+    public OrganizationService(SgelaFirestoreService sgelaFirestoreService, MailService mailService, UserService userService) {
+        this.sgelaFirestoreService = sgelaFirestoreService;
+        this.mailService = mailService;
+        this.userService = userService;
+    }
 
     //
     public List<Organization> getOrganizations() throws Exception {

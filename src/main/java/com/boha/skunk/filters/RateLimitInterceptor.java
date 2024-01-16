@@ -6,7 +6,6 @@ import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -14,13 +13,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class RateLimitInterceptor implements HandlerInterceptor {
 
     private static final String xx = E.FERN+E.FERN+E.FERN + "AppConfig: ";
     private static final Logger LOGGER = LoggerFactory.getLogger(RateLimitInterceptor.class);
 
     private final PricingPlanService pricingPlanService;
+
+    public RateLimitInterceptor(PricingPlanService pricingPlanService) {
+        this.pricingPlanService = pricingPlanService;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)

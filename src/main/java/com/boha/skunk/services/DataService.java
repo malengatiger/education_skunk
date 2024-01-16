@@ -1,25 +1,14 @@
 package com.boha.skunk.services;
 
-import com.boha.skunk.data.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import lombok.RequiredArgsConstructor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.logging.Logger;
 
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class DataService {
     private final OKHelper okHelper;
 
@@ -29,6 +18,9 @@ public class DataService {
     @Value("${educUrl}")
     private String educUrl;
 
+    public DataService(OKHelper okHelper) {
+        this.okHelper = okHelper;
+    }
 
 
 //
